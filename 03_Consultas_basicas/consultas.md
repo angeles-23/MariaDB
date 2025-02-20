@@ -418,6 +418,10 @@ Lista el nombre de los productos que tienen un precio menor o igual a 120€.
 SELECT p.nombre 
 FROM producto p 
 WHERE p.precio <= 120; 
+
+SELECT p.nombre 
+FROM producto p 
+WHERE NOT (p.precio > 120); 
  
  
 nombre   
@@ -430,15 +434,15 @@ Impresora HP Deskjet 3720
 📝Ejercicio R04_22❓:
 Lista el nombre de los productos que tienen un precio mayor o igual a 400€.
 ``` sql
-SELECT p.nombre, p.precio 
+SELECT p.nombre 
 FROM producto p 
 WHERE p.precio >= 400; 
  
  
-nombre  precio   
-GeForce GTX 1080 Xtreme 755.00   
-Portátil Yoga 520  559.00   
-Portátil Ideapd 320 444.00
+nombre    
+GeForce GTX 1080 Xtreme   
+Portátil Yoga 520    
+Portátil Ideapd 320 
 
 ```
 
@@ -465,36 +469,40 @@ Impresora HP Laserjet Pro M26nw
 📝Ejercicio R04_24❓:
 Lista todos los productos que tengan un precio entre 80€ y 300€. Sin utilizar el operador BETWEEN.
 ``` sql
-SELECT p.nombre 
+SELECT p.* 
 FROM producto p 
 WHERE p.precio >= 80 AND p.precio <= 300; 
- 
- 
-nombre   
-Disco duro SATA3 1TB   
-Memoria RAM DDR4 8GB   
-Disco SSD 1 TB   
-GeForce GTX 1050Ti   
-Monitor 24 LED Full HD   
-Monitor 27 LED Full HD   
-Impresora HP Laserjet Pro M26nw
+
+SELECT p.* 
+FROM producto p 
+WHERE NOT (p.precio < 80 OR p.precio > 300); 
+
+
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+2	Memoria RAM DDR4 8GB	120.00	6	
+3	Disco SSD 1 TB	150.99	4	
+4	GeForce GTX 1050Ti	185.00	7	
+6	Monitor 24 LED Full HD	202.00	1	
+7	Monitor 27 LED Full HD	245.99	1	
+11	Impresora HP Laserjet Pro M26nw	180.00	3	
 
 ```
 
 📝Ejercicio R04_25❓:
 Lista todos los productos que tengan un precio entre 60€ y 200€. Utilizando el operador BETWEEN.
 ``` sql
-SELECT p.nombre 
+SELECT p.* 
 FROM producto p 
-WHERE p.precio BETWEEN 60 AND 200; 
- 
- 
-nombre   
-Disco duro SATA3 1TB   
-Memoria RAM DDR4 8GB   
-Disco SSD 1 TB   
-GeForce GTX 1050Ti   
-Impresora HP Laserjet Pro M26nw
+WHERE p.precio BETWEEN 60 AND 200;
+
+
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+2	Memoria RAM DDR4 8GB	120.00	6	
+3	Disco SSD 1 TB	150.99	4	
+4	GeForce GTX 1050Ti	185.00	7	
+11	Impresora HP Laserjet Pro M26nw	180.00	3	
 
 ```
 
@@ -503,10 +511,10 @@ Lista todos los productos que tengan un precio mayor que 200€ y que el código
 ``` sql
 SELECT p.* 
 FROM producto p 
-WHERE p.precio > 200 AND p.codigo_fabricante = 6; 
- 
- 
-5  GeForce GTX 1080 Xtreme 755.00  6
+WHERE p.precio > 200 AND p.codigo_fabricante = 6;
+
+
+5	GeForce GTX 1080 Xtreme	755.00	6	
 
 ```
 
@@ -515,13 +523,15 @@ Lista todos los productos donde el código de fabricante sea 1, 3 o 5. Sin utili
 ``` sql
 SELECT p.* 
 FROM producto p 
-WHERE p.codigo = 1 OR p.codigo = 3 OR p.codigo = 5; 
+WHERE p.codigo_fabricante = 1 OR p.codigo_fabricante = 3 OR p.codigo_fabricante = 5; 
  
  
-codigo  nombre  precio  codigo_fabricante   
-1  Disco duro SATA3 1TB  86.99  5   
-3  Disco SSD 1 TB  150.99  4   
-5  GeForce GTX 1080 Xtreme 755.00  6
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+6	Monitor 24 LED Full HD	202.00	1	
+7	Monitor 27 LED Full HD	245.99	1	
+10	Impresora HP Deskjet 3720	59.99	3	
+11	Impresora HP Laserjet Pro M26nw	180.00	3	
 
 ```
 
@@ -530,13 +540,16 @@ Lista todos los productos donde el código de fabricante sea 1, 3 o 5. Utilizand
 ``` sql
 SELECT p.* 
 FROM producto p 
-WHERE p.codigo IN (1,3,5); 
- 
- 
-codigo  nombre  precio  codigo_fabricante   
-1  Disco duro SATA3 1TB  86.99  5   
-3  Disco SSD 1 TB  150.99  4   
-5  GeForce GTX 1080 Xtreme 755.00  6
+WHERE p.codigo_fabricante IN (1,3,5);
+
+
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+6	Monitor 24 LED Full HD	202.00	1	
+7	Monitor 27 LED Full HD	245.99	1	
+10	Impresora HP Deskjet 3720	59.99	3	
+11	Impresora HP Laserjet Pro M26nw	180.00	3	
+
 
 ```
 
