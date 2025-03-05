@@ -3,7 +3,6 @@
 ## 📝Ejercicio R01_04❓:
 Realiza la transformación del Modelo Relacional realizado en la actividad A2.04 al modelo físico, utilizando el Sistema Gestor de Bases de Datos (SGBD) Maria DB o MySQL.
 
-![Venta_automoviles](./imagenes/vehiculo.png)
 
 ```sql
 CLIENTE (codigo PK, nif, nombre, direccion, ciudad, telefono)
@@ -20,42 +19,128 @@ USE _02_venta_automoviles;
 -- CLIENTE (codigo PK, nif, nombre, direccion, ciudad, telefono)
 CREATE TABLE CLIENTE(
     codigo INT PRIMARY KEY,
-    nif VARCHAR(15),
+    nif VARCHAR(10),
     nombre VARCHAR(255),
     direccion VARCHAR(255),
     ciudad VARCHAR(255),
-    telefono VARCHAR(255)
+    telefono VARCHAR(20)
+
+    -- , PRIMARY KEY(codigo, NIF)   -> es obligatorio cuando la clave es compuesta
 );
+
+
+
+
+-- EL ORDEN INFLUYE EN LA BASE DE DATOS, por ello va primero coche.
 
 -- COCHE (bastidor PK, matricula, marca, modelo, color, precio, codPropietario FK(CLIENTE.codigo))
 CREATE TABLE COCHE(
-    bastidor INT PRIMARY KEY,
-    matricula VARCHAR(8),
-    marca VARCHAR(255),
-    modelo VARCHAR(255),
+    bastidor varchar(50),
+    matricula VARCHAR(20) NOT NULL, -- usar cunado no es opcional o sea imprescindible
+    marca VARCHAR(255) NOT NULL,
+    modelo VARCHAR(255) NOT NULL,
     color VARCHAR(255),
-    precio DECIMAL(10,2),
-    codPropietario INT NOT NULL,
-    FOREIGN KEY (codPropietario) REFERENCES CLIENTE(codigo)
+    precio DECIMAL(10,2), -- Quiero 10 caracteres, de ellos 2 son decimales
+    -- CONSTRAINT uq_coche_matricula UNIQUE (matricula); -- Nombre de la restriccion
+    codPropietario INT, -- FOREIGN KEY (codPropietario) REFERENCES CLIENTE(codigo)      Debe coincidir con el tipo de la tabla a la que se refiere, en este caso con bastidor varchar(50)
+    CONSTRAINT pk_coche PRIMARY KEY(bastidor), -- Damos un nombre a la clave
+    CONSTRAINT fk_coche_cliente FOREIGN KEY (codPropietario) REFERENCES CLIENTE(codigo)
 );
+
+
+-- RESTRICCIONES DESPUÉS DE CREAR LA BASE TABLA
+ALTER TABLE COCHE(
+    ADD CONSTRAINT pk_coche PRIMARY KEY(bastidor),
+);
+
 
 -- REVISION (codigo PK, filtro, aceite, frenos, bastidor FK(COCHE.bastidor), fecha)
 CREATE TABLE REVISION(
     codigo INT PRIMARY KEY,
-    filtro VARCHAR(255),
-    aceite VARCHAR(255),
-    frenos VARCHAR(255),
-    bastidor INT,
-    fecha VARCHAR(255),
+    filtro BOOLEAN DEFAULT true, -- por defecto es True
+    aceite BOOLEAN DEFAULT true,
+    frenos BOOLEAN DEFAULT false,
+    bastidor VARCHAR(50),
+    fecha DATE,
     FOREIGN KEY (bastidor) REFERENCES COCHE(bastidor)
 );
 ```
 
 
+``` sql
+-- MYSQL SERVER
+
+
+
+-- DROP DATABASE IF EXISTS _02_venta_automoviles;
+GO
+CREATE DATABASE _02_venta_automoviles;
+GO
+USE _02_venta_automoviles;
+GO
+
+
+-- CLIENTE (codigo PK, nif, nombre, direccion, ciudad, telefono)
+CREATE TABLE CLIENTE(
+    codigo INT PRIMARY KEY,
+    nif NVARCHAR(10),
+    nombre NVARCHAR(255),
+    direccion NVARCHAR(255),
+    ciudad NVARCHAR(255),
+    telefono NVARCHAR(20)
+
+    -- , PRIMARY KEY(codigo, NIF)   -> es obligatorio cuando la clave es compuesta
+);
+
+
+
+
+-- EL ORDEN INFLUYE EN LA BASE DE DATOS, por ello va primero coche.
+
+-- COCHE (bastidor PK, matricula, marca, modelo, color, precio, codPropietario FK(CLIENTE.codigo))
+CREATE TABLE COCHE(
+    bastidor NVARCHAR(50),
+    matricula NVARCHAR(20) NOT NULL, -- usar cunado no es opcional o sea imprescindible
+    marca NVARCHAR(255) NOT NULL,
+    modelo NVARCHAR(255) NOT NULL,
+    color NVARCHAR(255),
+    precio MONEY(10,2), -- Quiero 10 caracteres, de ellos 2 son decimales
+    -- CONSTRAINT uq_coche_matricula UNIQUE (matricula); -- Nombre de la restriccion
+    codPropietario INT, -- FOREIGN KEY (codPropietario) REFERENCES CLIENTE(codigo)      Debe coincidir con el tipo de la tabla a la que se refiere, en este caso con bastidor varchar(50)
+    CONSTRAINT pk_coche PRIMARY KEY(bastidor), -- Damos un nombre a la clave
+    CONSTRAINT fk_coche_cliente FOREIGN KEY (codPropietario) REFERENCES CLIENTE(codigo)
+);
+
+
+-- RESTRICCIONES DESPUÉS DE CREAR LA BASE TABLA
+ALTER TABLE COCHE(
+    ADD CONSTRAINT pk_coche PRIMARY KEY(bastidor),
+);
+
+
+-- REVISION (codigo PK, filtro, aceite, frenos, bastidor FK(COCHE.bastidor), fecha)
+CREATE TABLE REVISION(
+    codigo INT PRIMARY KEY,
+    filtro BIT DEFAULT 1, -- por defecto es True
+    aceite BIT DEFAULT 1,
+    frenos BIT DEFAULT 0,
+    bastidor NVARCHAR(50),
+    fecha DATE,
+    FOREIGN KEY (bastidor) REFERENCES COCHE(bastidor)
+);
+
+```
+
+
+
+
+
+
+
+
 ## 📝Ejercicio R01_05❓:
 Realiza la transformación del Modelo Relacional realizado en la actividad A2.05 al modelo físico, utilizando el Sistema Gestor de Bases de Datos (SGBD) MySQL o MariaDB.
 
-![Clinica](./imagenes/clinica.png)
 
 ```sql
 MEDICO (codigo PK, nombre, apellidos, telefono, especialidad)
