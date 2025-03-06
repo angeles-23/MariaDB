@@ -54,6 +54,10 @@ SELECT p.*, f.nombre as nombre_fabricante
 FROM producto p LEFT JOIN fabricante f 
 	ON p.codigo_fabricante = f.codigo;
 
+SELECT p.*, f.nombre as nombre_fabricante
+FROM fabricante f RIGHT JOIN  producto p
+	ON f.codigo = p.codigo_fabricante;
+
 
 codigo	nombre	precio	codigo_fabricante	nombre_fabricante	
 1	Disco duro SATA3 1TB	86.99	5	Seagate	
@@ -75,14 +79,8 @@ codigo	nombre	precio	codigo_fabricante	nombre_fabricante
 4. Deseamos obtener de todos los producto un listado de todos sus campos, junto a los nombres de los fabricante de los mismos. En la consulta deben aparecer también aquellos fabricantes que no tienen productos asociados.
 
 ``` sql
-SELECT p.*, f.nombre as nombre_fabricante
-FROM producto p LEFT JOIN fabricante f 
-	ON p.codigo_fabricante = f.codigo;
-    
 
-SELECT p.*, f.nombre as nombre_fabricante
-FROM producto p RIGHT JOIN fabricante f 
-	ON p.codigo_fabricante = f.codigo;
+
 
 ```
 
@@ -91,6 +89,38 @@ FROM producto p RIGHT JOIN fabricante f
 5. Deseamos obtener de todos los producto un listado de todos sus campos, junto a los nombres de los fabricante de los mismos. En la consulta deben aparecer también tanto los producto que no tienen un fabricante asignado, como aquellos fabricantes que no tienen productos asociados. Indica las instrucciones para realizarlo tanto en SQL Server como en MySQL/MariaDB.
 
 ``` sql
+SELECT p.*, f.nombre nombre_fabricante
+FROM producto p LEFT JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+
+UNION
+
+SELECT p.*, f.nombre nombre_fabricante
+FROM  producto p RIGHT JOIN fabricante f
+	ON p.codigo_fabricante = f.codigo;
+
+
+
+
+SELECT p.*, f.nombre nombre_fabricante
+FROM  producto p FULL JOIN fabricante f
+	ON p.codigo_fabricante = f.codigo;
+
+
+codigo	nombre	precio	codigo_fabricante	nombre_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	Seagate	
+2	Memoria RAM DDR4 8GB	120.00	6	Crucial	
+3	Disco SSD 1 TB	150.99	4	Samsung	
+4	GeForce GTX 1050Ti	185.00	7	Gigabyte	
+5	GeForce GTX 1080 Xtreme	755.00	6	Crucial	
+6	Monitor 24 LED Full HD	202.00	1	Asus	
+7	Monitor 27 LED Full HD	245.99	1	Asus	
+8	Portátil Yoga 520	559.00	2	Lenovo	
+9	Portátil Ideapd 320	444.00	2	Lenovo	
+10	Impresora HP Deskjet 3720	59.99	3	Hewlett-Packard	
+11	Impresora HP Laserjet Pro M26nw	180.00	3	Hewlett-Packard	
+NULL	NULL	NULL	NULL	Huawei	
+NULL	NULL	NULL	NULL	Xiaomi	
 
 
 ```
