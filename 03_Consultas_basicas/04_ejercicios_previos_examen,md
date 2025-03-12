@@ -1,0 +1,59 @@
+### Cuando el codigo valga 1: codigo1, 2: soy el 2, sino la raíz cuadrada
+``` sql
+SELECT 
+	código, 
+    nombre, 
+    if(SQRT(código)=1, 'RAIZ DE 1', SQRT(código)) as operacion,
+    case 
+    	WHEN código = 1 THEN 'codigo 1'
+        WHEN nombre like 'pu%' THEN 'EMPIEZA POR PU'
+        ELSE SQRT(código)
+    end case1,
+
+    case código
+        WHEN 1 THEN 'codigo 1'
+        WHEN 2 THEN 'SOY EL 2'
+        ELSE sqrt(código)
+     end case2
+FROM fabricante;
+
+
+código	nombre	operacion	case1	case2	
+1	El hijo de Ep	RAIZ DE 1	codigo 1	codigo 1	
+2	Tecnología Lógica	1.4142135623730951	1.4142135623730951	SOY EL 2	
+3	Pecado Capital	1.7320508075688772	1.7320508075688772	1.7320508075688772	
+4	Rey Casi Piedra	2	2	2	
+5	Puerta Al Mar	2.23606797749979	EMPIEZA POR PU	2.23606797749979	
+```
+
+
+### Quiero los fabricantes que no tengan codigo
+``` sql
+SELECT p.*
+FROM producto p1;
+
+EXCEPT 
+
+SELECT p.*
+FROM producto p INNER JOIN fabricante f 
+	ON p.código_fabricante = f.código;
+
+
+
+
+
+
+SELECT p.*
+FROM producto p LEFT JOIN fabricante f
+	on p.código_fabricante = f.código
+WHERE p.código_fabricante IS NULL
+
+
+
+
+
+SELECT p.*
+FROM producto p LEFT JOIN fabricante f
+	on p.código_fabricante = f.código
+WHERE NOT ISNUMERIC(p.código_fabricante)
+```
