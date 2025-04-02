@@ -1,45 +1,42 @@
-### 📝Ejercicios HAVING❓:
+### 📝Ejercicios HAVING❓(CORREGIDOS):
 1. Sobre la tabla alumno de la base de datos instituto necesitamos contar los alumnos nacidos en cada año, de aquellos años donde haya nacido más de uno.
 ``` sql
 SELECT 
-	LEFT(a.fecha_nacimiento, 4) as años,
-    COUNT(*) as 'alumnos nacidos'
-FROM alumno a
-GROUP BY años
-HAVING COUNT(*) > 1
-
+    YEAR(a.fecha_nacimiento) as año, 
+    COUNT(*) as cantidad
+FROM alumno a 
+GROUP BY YEAR(a.fecha_nacimiento)     -- LEFT(a.fecha_nacimiento, 4)
+HAVING COUNT(*) > 1;
 
 1998	2	
 ```
 
 
-2. Y si quisieramos contar los alumnos nacidos en cada año, de aquellos años donde haya nacido más de uno, pero sin tener en cuenta los que no tengan teléfono.
+2. Y si quisieramos contar los alumnos nacidos en cada año, de aquellos años donde haya nacido más de uno, pero **sin tener en cuenta los que no tengan teléfono**.
 ``` sql
 SELECT 
-	a.teléfono,
-	LEFT(a.fecha_nacimiento, 4) as años,
-    COUNT(*) as 'alumnos nacidos'
-FROM alumno a
-WHERE a.teléfono IS NULL or a.teléfono IS NOT NULL
-GROUP BY años
-HAVING COUNT(*) > 1
+    YEAR(a.fecha_nacimiento) as año, 
+    COUNT(*) as cantidad
+FROM alumno a 
+WHERE a.teléfono IS NOT NULL
+GROUP BY YEAR(a.fecha_nacimiento)	 -- LEFT(a.fecha_nacimiento, 4)
+HAVING COUNT(*) > 1;
 
-
-618253876	1998	2	
+	
 ```
 
 
 3. Queremos obtener el número promedio del id de los alumnos que agrupados por la inicial de su primer apellido, tengan una suma de sus id mayor que 5, el resultado debe mostrar la inicial del campo apellido1, junto al número promedio de id que llamaremos ‘media id’.
 ``` sql
 SELECT 
-    LEFT(a.apellido1, 1) as inicial_apellido1, 
+    LEFT(a.apellido1, 1) as 'inicial apellido1', 
     ROUND(AVG(a.id), 2) as 'media id' -- , COUNT(a.apellido1) as cantidad, SUM(id) as suma_ids
 FROM alumno a
-GROUP BY LEFT(a.apellido1, 1)
-HAVING SUM(a.id) > 5
+GROUP BY LEFT(a.apellido1, 1) -- SUBSTRING(a.apellido1, 1, 1): empezar en el  caracter 1 con una longitud de 1
+HAVING SUM(a.id) > 5;
 
 
-inicial_apellido1	media id	
+inicial apellido1	media id	
 C	8.00	
 D	9.00	
 F	7.00	
@@ -50,23 +47,21 @@ S   2.33
 
 
 4. Si deseáramos mostrar en el ejercicio anterior el campo apellido1 completo, ¿cómo lo podríamos hacer?.
-``` sql
+**NO SE PUEDE, PORQUE EN CASO DE QUE EXISTA UNA AGRUPACIÓN APARECERÁ UN VALOR CUALQUIERA QUE PUEDE VARIAR.
+SI NO ESTÁ EN EL GROUP BY NO PUEDE APARECER EN EL SELECT**
+
+
+5. Calcular el precio medio de los distintos tipos de productos
+```sql
 SELECT 
-	a.apellido1,
-	LEFT(a.apellido1, 1) as inicial_apellido1, 
-    ROUND(AVG(a.id), 2) as 'media id'-- , 
-    -- COUNT(a.apellido1) as cantidad, 
-    -- SUM(id) as suma_ids
-FROM alumno a
-GROUP BY LEFT(a.apellido1, 1)
-HAVING SUM(a.id) > 5 
+    p.tipo, 
+    ROUND(AVG(p.precio), 2) as precio
+FROM producto p
+GROUP BY p.tipo;
 
 
-apellido1	inicial_apellido1	media id	
-Carretero	C	8.00	
-Domínguez	D	9.00	
-Fernández	F	7.00	
-Gutiérrez	G	6.00	
-Martínez	M	7.50	
-Sánchez	S	2.33	
+tipo	precio	
+almacenamiento	118.67	
+gráficos	177.50	
+higiene	1.00	
 ```
