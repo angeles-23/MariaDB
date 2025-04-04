@@ -26,6 +26,17 @@ Portátil Yoga 520	559.00	Lenovo
 Portátil Ideapd 320	444.00	Lenovo	
 Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
 Impresora HP Laserjet Pro M26nw	180.00	Hewlett-Packard	
+Disco duro SATA3 1TB	86.99	Seagate	
+Memoria RAM DDR4 8GB	120.00	Crucial	
+Disco SSD 1 TB	150.99	Samsung	
+GeForce GTX 1050Ti	185.00	Gigabyte	
+GeForce GTX 1080 Xtreme	755.00	Crucial	
+Monitor 24 LED Full HD	202.00	Asus	
+Monitor 27 LED Full HD	245.99	Asus	
+Portátil Yoga 520	559.00	Lenovo	
+Portátil Ideapd 320	444.00	Lenovo	
+Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
+Impresora HP Laserjet Pro M26nw	180.00	Hewlett-Packard	
 
 ```
 
@@ -64,30 +75,73 @@ Disco duro SATA3 1TB	86.99	Seagate
 3. Devuelve una lista con el código del producto, nombre del producto, código del fabricante y nombre del fabricante, de todos los productos de la base de datos.
 ```sql
 -- SQL1
+SELECT p.codigo, p.nombre as nombre_producto, p.codigo_fabricante, f.nombre as nombre_fabricante
+FROM producto p, fabricante f
+	WHERE p.codigo_fabricante = f.codigo OR p.codigo_fabricante IS NULL;
 
 -- SQL2
+SELECT p.codigo, p.nombre as nombre_producto, p.codigo_fabricante, f.nombre as nombre_fabricante
+FROM producto p LEFT JOIN fabricante f
+	ON p.codigo_fabricante = f.codigo;
 
 -- SOLUCIÓN
+codigo	nombre_producto	codigo_fabricante	nombre_fabricante	
+1	Disco duro SATA3 1TB	5	Seagate	
+2	Memoria RAM DDR4 8GB	6	Crucial	
+3	Disco SSD 1 TB	4	Samsung	
+4	GeForce GTX 1050Ti	7	Gigabyte	
+5	GeForce GTX 1080 Xtreme	6	Crucial	
+6	Monitor 24 LED Full HD	1	Asus	
+7	Monitor 27 LED Full HD	1	Asus	
+8	Portátil Yoga 520	2	Lenovo	
+9	Portátil Ideapd 320	2	Lenovo	
+10	Impresora HP Deskjet 3720	3	Hewlett-Packard	
+11	Impresora HP Laserjet Pro M26nw	3	Hewlett-Packard	
+
 ```
 
 
 4. Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más barato.
 ```sql
 -- SQL1
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo 
+ORDER BY p.precio ASC
+LIMIT 1;
 
 -- SQL2
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+ORDER BY p.precio ASC
+LIMIT 1;
 
 -- SOLUCIÓN
+Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
+
 ```
 
 
 5. Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más caro.
 ```sql
 -- SQL1
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo 
+ORDER BY p.precio DESC
+LIMIT 1;
 
 -- SQL2
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+ORDER BY p.precio DESC
+LIMIT 1;
 
 -- SOLUCIÓN
+GeForce GTX 1080 Xtreme	755.00	Crucial	
+
 ```
 
 
@@ -98,6 +152,7 @@ Disco duro SATA3 1TB	86.99	Seagate
 -- SQL2
 
 -- SOLUCIÓN
+
 ```
 
 
@@ -108,6 +163,7 @@ Disco duro SATA3 1TB	86.99	Seagate
 -- SQL2
 
 -- SOLUCIÓN
+
 ```
 
 
