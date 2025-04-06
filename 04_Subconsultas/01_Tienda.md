@@ -37,7 +37,6 @@ Portátil Yoga 520	559.00	Lenovo
 Portátil Ideapd 320	444.00	Lenovo	
 Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
 Impresora HP Laserjet Pro M26nw	180.00	Hewlett-Packard	
-
 ```
 
 
@@ -55,7 +54,7 @@ FROM producto p LEFT JOIN fabricante f
 	ON p.codigo_fabricante = f.codigo
 ORDER BY f.nombre ASC;
 
--- SOLUCIÓN
+-- RESULTADO
 nombre_producto	precio	nombre   	
 Monitor 24 LED Full HD	202.00	Asus	
 Monitor 27 LED Full HD	245.99	Asus	
@@ -68,7 +67,6 @@ Portátil Yoga 520	559.00	Lenovo
 Portátil Ideapd 320	444.00	Lenovo	
 Disco SSD 1 TB	150.99	Samsung	
 Disco duro SATA3 1TB	86.99	Seagate	
-
 ```
 
 
@@ -84,7 +82,7 @@ SELECT p.codigo, p.nombre as nombre_producto, p.codigo_fabricante, f.nombre as n
 FROM producto p LEFT JOIN fabricante f
 	ON p.codigo_fabricante = f.codigo;
 
--- SOLUCIÓN
+-- RESULTADO
 codigo	nombre_producto	codigo_fabricante	nombre_fabricante	
 1	Disco duro SATA3 1TB	5	Seagate	
 2	Memoria RAM DDR4 8GB	6	Crucial	
@@ -97,7 +95,6 @@ codigo	nombre_producto	codigo_fabricante	nombre_fabricante
 9	Portátil Ideapd 320	2	Lenovo	
 10	Impresora HP Deskjet 3720	3	Hewlett-Packard	
 11	Impresora HP Laserjet Pro M26nw	3	Hewlett-Packard	
-
 ```
 
 
@@ -117,9 +114,8 @@ FROM producto p INNER JOIN fabricante f
 ORDER BY p.precio ASC
 LIMIT 1;
 
--- SOLUCIÓN
+-- RESULTADO
 Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
-
 ```
 
 
@@ -139,110 +135,227 @@ FROM producto p INNER JOIN fabricante f
 ORDER BY p.precio DESC
 LIMIT 1;
 
--- SOLUCIÓN
+-- RESULTADO
 GeForce GTX 1080 Xtreme	755.00	Crucial	
-
 ```
 
 
 6. Devuelve una lista de todos los productos del fabricante Lenovo.
 ```sql
 -- SQL1
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND f.nombre = 'Lenovo';
 
 -- SQL2
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Lenovo';
 
--- SOLUCIÓN
-
+-- RESULTADO
+codigo	nombre	precio	codigo_fabricante	
+8	Portátil Yoga 520	559	2	
+9	Portátil Ideapd 320	444	2	
 ```
 
 
 7. Devuelve una lista de todos los productos del fabricante Crucial que tengan un precio mayor que 200€.
 ```sql
 -- SQL1
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND f.nombre = 'Crucial' AND p.precio > 200;
 
 -- SQL2
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Crucial' AND p.precio > 200;
 
--- SOLUCIÓN
-
+-- RESULTADO
+5	GeForce GTX 1080 Xtreme	755	6	
 ```
 
 
-8. Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packardy Seagate. Sin utilizar el operador IN.
+8. Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packard Seagate. Sin utilizar el operador IN.
 ```sql
 -- SQL1
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND (f.nombre = 'Asus' OR f.nombre = 'Hewlett-Packard' OR f.nombre = 'Seagate');
 
 -- SQL2
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE f.nombre = 'Asus' OR f.nombre = 'Hewlett-Packard' OR f.nombre = 'Seagate';
 
--- SOLUCIÓN
+-- RESULTADO
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+6	Monitor 24 LED Full HD	202	1	
+7	Monitor 27 LED Full HD	245.99	1	
+10	Impresora HP Deskjet 3720	59.99	3	
+11	Impresora HP Laserjet Pro M26nw	180	3	
 ```
 
 
 9. Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packardy Seagate. Utilizando el operador IN.
 ```sql
 -- SQL1
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND f.nombre IN ('Asus','Hewlett-Packard','Seagate');
 
 -- SQL2
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');
 
--- SOLUCIÓN
+-- RESULTADO
+codigo	nombre	precio	codigo_fabricante	
+1	Disco duro SATA3 1TB	86.99	5	
+6	Monitor 24 LED Full HD	202	1	
+7	Monitor 27 LED Full HD	245.99	1	
+10	Impresora HP Deskjet 3720	59.99	3	
+11	Impresora HP Laserjet Pro M26nw	180	3	
 ```
 
 
 10. Devuelve un listado con el nombre y el precio de todos los productos de los fabricantes cuyo nombre termine por la vocal e.
 ```sql
 -- SQL1
+SELECT p.nombre, p.precio
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND f.nombre LIKE '%e';
 
 -- SQL2
+SELECT p.nombre, p.precio
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE f.nombre LIKE '%e';
 
--- SOLUCIÓN
+-- RESULTADO
+nombre	precio	
+Disco duro SATA3 1TB	86.99	
+GeForce GTX 1050Ti	185	
 ```
 
 
 11. Devuelve un listado con el nombre y el precio de todos los productos cuyo nombre de fabricante contenga el carácter w en su nombre.
 ```sql
 -- SQL1
+SELECT p.nombre, p.precio
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND f.nombre LIKE '%w%';
 
 -- SQL2
+SELECT p.nombre, p.precio
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+WHERE f.nombre LIKE '%w%';
 
--- SOLUCIÓN
+-- RESULTADO
+nombre	precio	
+Impresora HP Deskjet 3720	59.99	
+Impresora HP Laserjet Pro M26nw	180	
 ```
 
 
 12. Devuelve un listado con el nombre de producto, precio y nombre de fabricante, de todos los productos que tengan un precio mayor o igual a 180€. Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre del producto (en orden ascendente).
 ```sql
 -- SQL1
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p, fabricante f 
+	WHERE p.codigo_fabricante = f.codigo AND p.precio >= 180
+ORDER BY p.precio DESC, p.nombre ASC;
 
 -- SQL2
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE p.precio >= 180
+ORDER BY p.precio DESC, p.nombre ASC;
 
--- SOLUCIÓN
+-- RESULTADO
+nombre_producto	precio   	nombre_fabricante	
+GeForce GTX 1080 Xtreme	755	Crucial	
+Portátil Yoga 520	559	Lenovo	
+Portátil Ideapd 320	444	Lenovo	
+Monitor 27 LED Full HD	245.99	Asus	
+Monitor 24 LED Full HD	202	Asus	
+GeForce GTX 1050Ti	185	Gigabyte	
+Impresora HP Laserjet Pro M26nw	180	Hewlett-Packard	
 ```
 
 
 13. Devuelve un listado con el código y el nombre de fabricante, solamente de aquellos fabricantes que tienen productos asociados en la base de datos.
 ``` sql
 -- SQL1
+SELECT DISTINCT(f.codigo), f.nombre
+FROM fabricante f, producto p
+	WHERE f.codigo = p.codigo_fabricante;
 
 -- SQL2
+SELECT DISTINCT(f.codigo), f.nombre
+FROM fabricante f INNER JOIN producto p
+	ON f.codigo = p.codigo_fabricante;
 
--- SOLUCIÓN
-
+-- RESULTADO
+codigo	nombre	
+1	Asus	
+2	Lenovo	
+3	Hewlett-Packard	
+4	Samsung	
+5	Seagate	
+6	Crucial	
+7	Gigabyte	
 ```
+
+
 
 ### [A4.1.5] 📝Consultas multitabla tienda (Composición externa) ❓:
 Resuelva todas las consultas utilizando las cláusulas LEFT JOIN y RIGHT JOIN.
 
 1. Devuelve un listado de todos los fabricantes que existen en la base de datos, junto con los productos que tiene cada uno de ellos. El listado deberá mostrar también aquellos fabricantes que no tienen productos asociados.
 ```sql
+SELECT DISTINCT(f.codigo), f.nombre
+FROM fabricante f LEFT JOIN producto p 	
+	ON f.codigo = p.codigo_fabricante;
 
+-- RESULTADO
+codigo	nombre	
+1	Asus	
+2	Lenovo	
+3	Hewlett-Packard	
+4	Samsung	
+5	Seagate	
+6	Crucial	
+7	Gigabyte	
+8	Huawei	
+9	Xiaomi	
 ```
+
 
 2. Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
 ```sql
-
+SELECT f.codigo, f.nombre
+FROM fabricante f LEFT JOIN producto p 	
+	ON f.codigo = p.codigo_fabricante
+WHERE p.codigo_fabricante IS NULL;
+    
+-- RESULTADO
+codigo	nombre	
+8	Huawei	
+9	Xiaomi	
 ```
 
-3. ¿Pueden existir productos que no estén relacionados con un fabricante? Justifique su respuesta.
-```sql
 
+3. ¿Pueden existir productos que no estén relacionados con un fabricante? Justifique su respuesta.
+```txt
+No, porque todo producto tiene que tener una clave foránea (codigo_fabricante) que hace referencia a la clave primaria de fabricante (codigo)
 ```
 
 
@@ -250,134 +363,257 @@ Resuelva todas las consultas utilizando las cláusulas LEFT JOIN y RIGHT JOIN.
 ### [A4.1.6] 📝Consultas resumen tienda ❓:
 1. Calcula el número total de productos que hay en la tabla producto.
 ```sql
+SELECT COUNT(p.codigo) as cantidad_productos
+FROM producto p;
 
+-- RESULTADO
+11	
 ```
+
 
 2. Calcula el número total de fabricantes que hay en la tabla fabricante.
 ```sql
+SELECT COUNT(f.codigo) as cantidad_fabricantes
+FROM fabricante f;
 
+-- RESULTADO
+9	
 ```
+
 
 3. Calcula el número de valores distintos de código de fabricante aparecen en la tabla producto.
 ```sql
+SELECT COUNT(DISTINCT p.codigo_fabricante) AS cantidad_productos_distintos
+FROM producto p;
 
+-- RESULTADO
+7
 ```
+
 
 4. Calcula la media del precio de todos los productos.
 ```sql
+SELECT AVG(p.precio) as media_precio_productos
+FROM producto p;
 
+-- RESULTADO
+271.72		
 ```
+
 
 5. Calcula el precio más barato de todos los productos.
 ```sql
+SELECT MIN(p.precio) as precio_mas_barato
+FROM producto p;
 
+-- RESULTADO
+59.99	
 ```
+
 
 6. Calcula el precio más caro de todos los productos.
 ```sql
+SELECT MAX(p.precio) as precio_mas_caro
+FROM producto p;
 
+-- RESULTADO
+755	
 ```
+
 
 7. Lista el nombre y el precio del producto más barato.
 ```sql
+SELECT p.nombre, p.precio
+FROM producto p 
+WHERE p.precio = (SELECT MIN(precio)
+                 FROM producto);
 
+-- RESULTADO
+Impresora HP Deskjet 3720	59.99	
 ```
+
 
 8. Lista el nombre y el precio del producto más caro.
 ```sql
+SELECT p.nombre, p.precio
+FROM producto p 
+WHERE p.precio = (SELECT MAX(precio)
+                 FROM producto);
 
+-- RESULTADO
+GeForce GTX 1080 Xtreme	755	
 ```
+
 
 9. Calcula la suma de los precios de todos los productos.
 ```sql
+SELECT SUM(p.precio) as precio_total
+FROM producto p;
 
+-- RESULTADO
+2988.96	
 ```
+
 
 10. Calcula el número de productos que tiene el fabricante Asus.
 ```sql
+SELECT COUNT(f.codigo) as cantidad_productos_Asus
+FROM  fabricante f INNER JOIN producto p
+    ON f.codigo = p.codigo_fabricante
+WHERE f.nombre = 'Asus';
 
+-- RESULTADO
+2	
 ```
+
 
 11. Calcula la media del precio de todos los productos del fabricante Asus.
 ```sql
+SELECT AVG(p.precio) as media_del_precio_Asus
+FROM producto p INNER JOIN fabricante f 
+    ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Asus';
 
+-- RESULTADO
+223.995	
 ```
+
 
 12. Calcula el precio más barato de todos los productos del fabricante Asus.
 ```sql
+SELECT MIN(p.precio) AS precio_mas_barato_Asus
+FROM producto p INNER JOIN fabricante f 
+    ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Asus';
 
+-- RESULTADO
+202	
 ```
 
-13. Calcula el precio más caro de todos los productos del fabricante Asus.
+
+13.  Calcula el precio más caro de todos los productos del fabricante Asus.
 ```sql
+SELECT MAX(p.precio) AS precio_mas_caro_Asus
+FROM producto p INNER JOIN fabricante f 
+    ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Asus';
 
+-- RESULTADO
+245.99	
 ```
 
-14. Calcula la suma de los precios de todos los productos del fabricante Asus.
+
+14.  Calcula la suma de los precios de todos los productos del fabricante Asus.
 ```sql
+SELECT SUM(p.precio) as precio_total_Asus
+FROM producto p INNER JOIN fabricante f 
+    ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Asus';
 
+-- RESULTADO
+447.99	202	
 ```
+
 
 15. Muestra el precio máximo, precio mínimo, precio medio y el número total de productos que tiene el fabricante Crucial.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 16. Muestra el número total de productos que tiene cada uno de los fabricantes. El listado también debe incluir los fabricantes que no tienen ningún producto. El resultado mostrará dos columnas, una con el nombre del fabricante y otra con el número de productos que tiene. Ordene el resultado descendentemente por el número de productos.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 17. Muestra el precio máximo, precio mínimo y precio medio de los productos de cada uno de los fabricantes. El resultado mostrará el nombre del fabricante junto con los datos que se solicitan.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 18. Muestra el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. No es necesario mostrar el nombre del fabricante, con el código del fabricante es suficiente.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 19. Muestra el nombre de cada fabricante, junto con el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. Es necesario mostrar el nombre del fabricante.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
 20. Calcula el número de productos que tienen un precio mayor o igual a 180€.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 21. Calcula el número de productos que tiene cada fabricante con un precio mayor o igual a 180€.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 22. Lista el precio medio los productos de cada fabricante, mostrando solamente el código del fabricante.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 23. Lista el precio medio los productos de cada fabricante, mostrando solamente el nombre del fabricante.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 24. Lista los nombres de los fabricantes cuyos productos tienen un precio medio mayor o igual a 150€.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 25. Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 26. Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. No es necesario mostrar el nombre de los fabricantes que no tienen productos que cumplan la condición.
-```sql
-
-```
-
 Ejemplo del resultado esperado: 
 | Nombre | Total |
 |--------|-------|
@@ -385,7 +621,15 @@ Ejemplo del resultado esperado:
 | Asus   |   1   |
 | Crucial |   1   |
 
-27. Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. El listado debe mostrar el nombre de todos los fabricantes, es decir, si hay algún fabricante que no tiene productos con un precio superior o igual a 220€ deberá aparecer en el listado con un valor igual a 0 en el número de productos.
+```sql
+
+-- RESULTADO
+
+
+```
+
+
+27.  Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. El listado debe mostrar el nombre de todos los fabricantes, es decir, si hay algún fabricante que no tiene productos con un precio superior o igual a 220€ deberá aparecer en el listado con un valor igual a 0 en el número de productos.
 Ejemplo del resultado esperado:
 
 | nombre | total|
@@ -402,15 +646,26 @@ Ejemplo del resultado esperado:
 
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 28. Devuelve un listado con los nombres de los fabricantes donde la suma del precio de todos sus productos es superior a 1000 €.
 ```sql
 
+-- RESULTADO
+
+
 ```
+
 
 29. Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -421,30 +676,48 @@ Ejemplo del resultado esperado:
 1. Devuelve todos los productos del fabricante Lenovo. (Sin utilizar INNER JOIN).
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 2. Devuelve todos los datos de los productos que tienen el mismo precio que el producto más caro del fabricante Lenovo. (Sin utilizar INNER JOIN).
 ```sql
+
+-- RESULTADO
+
 
 ```
 
 3. Lista el nombre del producto más caro del fabricante Lenovo.
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 4. Lista el nombre del producto más barato del fabricante Hewlett-Packard.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
 5. Devuelve todos los productos de la base de datos que tienen un precio mayor o igual al producto más caro del fabricante Lenovo.
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 6.  Lista todos los productos del fabricante Asus que tienen un precio superior al precio medio de todos sus productos.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -452,6 +725,9 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.2] Subconsultas (En la cláusula HAVING)
 7. Devuelve un listado con todos los nombres de los fabricantes que tienen el mismo número de productos que el fabricante Lenovo.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -461,20 +737,32 @@ Ejemplo del resultado esperado:
 8. Devuelve el producto más caro que existe en la tabla producto sin hacer uso de MAX, ORDER BY ni LIMIT.
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 9. Devuelve el producto más barato que existe en la tabla producto sin hacer uso de MIN, ORDER BY ni LIMIT.
 ```sql
+
+-- RESULTADO
+
 
 ```
 
 10. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando ALL o ANY).
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 11. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando ALL o ANY).
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -484,10 +772,16 @@ Ejemplo del resultado esperado:
 12. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando IN o NOT IN).
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 13. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando IN o NOT IN).
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -497,10 +791,16 @@ Ejemplo del resultado esperado:
 14. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 15. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql
+
+-- RESULTADO
+
 
 ```
 
@@ -510,14 +810,23 @@ Ejemplo del resultado esperado:
 16. Lista el nombre de cada fabricante con el nombre y el precio de su producto más caro.
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 17. Devuelve un listado de todos los productos que tienen un precio mayor o igual a la media de todos los productos de su mismo fabricante.
 ```sql
 
+-- RESULTADO
+
+
 ```
 
 18. Lista el nombre del producto más caro del fabricante Lenovo.
 ```sql
+
+-- RESULTADO
+
 
 ```
