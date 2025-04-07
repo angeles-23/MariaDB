@@ -517,104 +517,208 @@ WHERE f.nombre = 'Asus';
 
 15. Muestra el precio máximo, precio mínimo, precio medio y el número total de productos que tiene el fabricante Crucial.
 ```sql
+SELECT 
+	MAX(p.precio) AS precio_mayor, 
+	MIN(p.precio) as precio_menor, 
+	AVG(p.precio) as precio_media, 
+	COUNT(p.precio) cantidad_productos
+FROM fabricante f INNER JOIN producto p 
+	ON f.codigo = p.codigo_fabricante
+WHERE f.nombre = 'Crucial';
 
 -- RESULTADO
-
-
+755	120	437.5	2	
 ```
 
 
 16. Muestra el número total de productos que tiene cada uno de los fabricantes. El listado también debe incluir los fabricantes que no tienen ningún producto. El resultado mostrará dos columnas, una con el nombre del fabricante y otra con el número de productos que tiene. Ordene el resultado descendentemente por el número de productos.
 ```sql
+SELECT 
+	f.nombre, 
+	if((p.codigo_fabricante IS NULL), 0, COUNT(p.codigo_fabricante)) AS cantidad_productos
+FROM fabricante f LEFT JOIN producto p 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre
+ORDER BY COUNT(p.codigo_fabricante) DESC;
 
 -- RESULTADO
-
-
+nombre	cantidad_productos	
+Asus	2	
+Crucial	2	
+Hewlett-Packard	2	
+Lenovo	2	
+Gigabyte	1	
+Samsung	1	
+Seagate	1	
+Xiaomi	0	
+Huawei	0	
 ```
 
 
 17. Muestra el precio máximo, precio mínimo y precio medio de los productos de cada uno de los fabricantes. El resultado mostrará el nombre del fabricante junto con los datos que se solicitan.
 ```sql
+SELECT 
+	MAX(p.precio) as precio_maximo, 
+	MIN(p.precio) as precio_minimo, 
+	AVG(p.precio) as precio_medio, 
+	f.nombre AS nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre;
 
 -- RESULTADO
-
-
+precio_maximo	precio_minimo	precio_medio	nombre_fabricante	
+245.99	202	223.995	Asus	
+755	120	437.5	Crucial	
+185	185	185	Gigabyte	
+180	59.99	119.995	Hewlett-Packard	
+559	444	501.5	Lenovo	
+150.99	150.99	150.99	Samsung	
+86.99	86.99	86.99	Seagate	
 ```
 
 
 18. Muestra el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. No es necesario mostrar el nombre del fabricante, con el código del fabricante es suficiente.
 ```sql
+SELECT 
+	MAX(p.precio) AS precio_maximo, 
+	MIN(p.precio) AS precio_minimo,
+	AVG(p.precio) AS precio_medio, 
+	COUNT(p.codigo_fabricante) AS total_productos, 
+	p.codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre
+HAVING AVG(p.precio) > 200;
 
 -- RESULTADO
-
-
+precio_maximo	precio_minimo	precio_medio	total_productos	codigo_fabricante	
+245.99	202	223.995	2	1	
+755	120	437.5	2	6	
+559	444	501.5	2	2	
 ```
 
 
 19. Muestra el nombre de cada fabricante, junto con el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. Es necesario mostrar el nombre del fabricante.
 ```sql
+SELECT 
+	f.nombre, 
+	MAX(p.precio) AS precio_maximo, 
+	MIN(p.precio) AS precio_minimo, 
+	AVG(p.precio) AS precio_medio, 
+	COUNT(*) AS cantidad_productos
+FROM fabricante f INNER JOIN producto p 
+	ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING  AVG(p.precio) > 200;
 
 -- RESULTADO
-
-
+nombre	precio_maximo	precio_minimo	precio_medio	cantidad_productos	
+Asus	245.99	202	223.995	2	
+Crucial	755	120	437.5	2	
+Lenovo	559	444	501.5	2	
 ```
+
 
 20. Calcula el número de productos que tienen un precio mayor o igual a 180€.
 ```sql
+SELECT COUNT(p.precio) AS cantidad_productos_mayor_o_igual_180
+FROM producto p
+WHERE p.precio >= 180;
 
 -- RESULTADO
-
-
+7	
 ```
 
 
 21. Calcula el número de productos que tiene cada fabricante con un precio mayor o igual a 180€.
 ```sql
+SELECT COUNT(p.codigo) as cantidad_productos_con_fabricante_con_precio_mayor_o_igual_180
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+WHERE p.precio >= 180;
 
 -- RESULTADO
-
-
+7	
 ```
 
 
 22. Lista el precio medio los productos de cada fabricante, mostrando solamente el código del fabricante.
 ```sql
+SELECT AVG(p.precio) AS precio_medio, f.codigo AS codigo_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.codigo;
 
 -- RESULTADO
-
-
+precio_medio	codigo_fabricante	
+223.995	1	
+501.5	2	
+119.995	3	
+150.99	4	
+86.99	5	
+437.5	6	
+185	7	
 ```
 
 
 23. Lista el precio medio los productos de cada fabricante, mostrando solamente el nombre del fabricante.
 ```sql
+SELECT AVG(p.precio) AS precio_medio, f.nombre AS nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.codigo;
 
 -- RESULTADO
-
-
+precio_medio	nombre_fabricante	
+223.995	Asus	
+501.5	Lenovo	
+119.995	Hewlett-Packard	
+150.99	Samsung	
+86.99	Seagate	
+437.5	Crucial	
+185	Gigabyte	
 ```
 
 
 24. Lista los nombres de los fabricantes cuyos productos tienen un precio medio mayor o igual a 150€.
 ```sql
+SELECT f.nombre AS nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre
+HAVING AVG(p.precio) >= 150;
 
 -- RESULTADO
-
-
+nombre_fabricante	precio	
+Asus	202	
+Crucial	120	
+Gigabyte	185	
+Lenovo	559	
+Samsung	150.99	
 ```
 
 
 25. Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
 ```sql
+SELECT f.nombre AS nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre
+HAVING COUNT(p.precio) >= 2;
 
 -- RESULTADO
-
-
+nombre_fabricante	
+Asus	
+Crucial	
+Hewlett-Packard	
+Lenovo	
 ```
 
 
 26. Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. No es necesario mostrar el nombre de los fabricantes que no tienen productos que cumplan la condición.
 Ejemplo del resultado esperado: 
+
 | Nombre | Total |
 |--------|-------|
 | Lenovo |   2   |
@@ -622,10 +726,18 @@ Ejemplo del resultado esperado:
 | Crucial |   1   |
 
 ```sql
+SELECT f.nombre AS Nombre, COUNT(*) AS Total
+FROM fabricante f INNER JOIN producto p 
+	ON f.codigo = p.codigo_fabricante
+WHERE p.precio >= 220
+GROUP BY f.nombre
+ORDER BY COUNT(*) DESC;
 
 -- RESULTADO
-
-
+Nombre	Total	
+Lenovo	2	
+Asus	1	
+Crucial	1	
 ```
 
 
