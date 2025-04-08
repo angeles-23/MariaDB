@@ -741,7 +741,7 @@ Crucial	1
 ```
 
 
-27.  Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. El listado debe mostrar el nombre de todos los fabricantes, es decir, si hay algún fabricante que no tiene productos con un precio superior o igual a 220€ deberá aparecer en el listado con un valor igual a 0 en el número de productos.
+27. Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. El listado debe mostrar el nombre de todos los fabricantes, es decir, si hay algún fabricante que no tiene productos con un precio superior o igual a 220€ deberá aparecer en el listado con un valor igual a 0 en el número de productos.
 Ejemplo del resultado esperado:
 
 | nombre | total|
@@ -757,28 +757,61 @@ Ejemplo del resultado esperado:
 |Seagate|	0|
 
 ```sql
+SELECT 
+    f.nombre, 
+    COUNT(p.codigo_fabricante) as total
+FROM fabricante f LEFT JOIN producto p 
+	ON f.codigo = p.codigo_fabricante AND p.precio >= 220
+GROUP BY f.nombre
+ORDER BY total DESC;
 
 -- RESULTADO
-
-
+nombre	total   	
+Lenovo	2	
+Asus	1	
+Crucial	1	
+Samsung	0	
+Xiaomi	0	
+Hewlett-Packard	0	
+Huawei	0	
+Seagate	0	
+Gigabyte	0	
 ```
 
 
 28. Devuelve un listado con los nombres de los fabricantes donde la suma del precio de todos sus productos es superior a 1000 €.
 ```sql
+SELECT f.nombre, SUM(p.precio) as total
+FROM fabricante f INNER JOIN producto p 
+	ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING total > 1000;
 
 -- RESULTADO
-
-
+Lenovo	1003	
 ```
 
 
 29. Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
 ```sql
+SELECT 
+	p.nombre AS nombre_fabricante, 
+	MAX(p.precio) AS precio_maximo, 
+	f.nombre AS nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo
+GROUP BY f.nombre
+ORDER BY f.nombre ASC;
 
 -- RESULTADO
-
-
+nombre_fabricante	precio_maximo	nombre_fabricante	
+Monitor 24 LED Full HD	245.99	Asus	
+Memoria RAM DDR4 8GB	755	Crucial	
+GeForce GTX 1050Ti	185	Gigabyte	
+Impresora HP Deskjet 3720	180	Hewlett-Packard	
+Portátil Yoga 520	559	Lenovo	
+Disco SSD 1 TB	150.99	Samsung	
+Disco duro SATA3 1TB	86.99	Seagate	
 ```
 
 
@@ -787,60 +820,130 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.1] Con operadores básicos de comparación
 1. Devuelve todos los productos del fabricante Lenovo. (Sin utilizar INNER JOIN).
 ```sql
+SELECT p.nombre
+FROM producto p
+WHERE p.codigo_fabricante = (
+                            SELECT f.codigo
+                            FROM fabricante f 
+                            WHERE f.nombre = 'Lenovo'
+                            );
 
 -- RESULTADO
-
-
+nombre	
+Portátil Yoga 520	
+Portátil Ideapd 320	
 ```
+
 
 2. Devuelve todos los datos de los productos que tienen el mismo precio que el producto más caro del fabricante Lenovo. (Sin utilizar INNER JOIN).
 ```sql
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p 
+WHERE p.precio = (SELECT MAX(precio)
+                  FROM producto
+                 WHERE producto.codigo_fabricante = (SELECT f.codigo
+                                                     FROM fabricante f
+                                                     WHERE f.nombre = 'Lenovo'));
 
 -- RESULTADO
-
-
+8	Portátil Yoga 520	559	2	
 ```
+
 
 3. Lista el nombre del producto más caro del fabricante Lenovo.
 ```sql
+SELECT p1.nombre
+FROM producto p1
+WHERE p1.precio = (
+                    SELECT MAX(p2.precio)
+                    FROM producto p2
+                    WHERE p2.codigo_fabricante = (
+                                                    SELECT f.codigo
+                                                    FROM fabricante f 
+                                                    WHERE f.nombre = 'Lenovo'
+                                                ));
 
 -- RESULTADO
-
-
+Portátil Yoga 520	
 ```
+
 
 4. Lista el nombre del producto más barato del fabricante Hewlett-Packard.
 ```sql
+SELECT p1.nombre
+FROM producto p1
+WHERE p1.precio = (
+                    SELECT MIN(p2.precio)
+                    FROM producto p2
+                    WHERE p2.codigo_fabricante = (
+                                                    SELECT f.codigo
+                                                    FROM fabricante f 
+                                                    WHERE f.nombre = 'Hewlett-Packard'
+                                                 ));
 
 -- RESULTADO
-
-
+Impresora HP Deskjet 3720	
 ```
+
 
 5. Devuelve todos los productos de la base de datos que tienen un precio mayor o igual al producto más caro del fabricante Lenovo.
 ```sql
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p
+WHERE p.precio >= (
+                    SELECT MIN(p1.precio)
+                    FROM producto p1
+                    WHERE p1.codigo_fabricante = (
+                        							SELECT f.codigo
+                                                     FROM fabricante f 
+                                                     WHERE f.nombre = 'Lenovo'));
 
 -- RESULTADO
-
-
+codigo	nombre	precio	codigo_fabricante	
+5	GeForce GTX 1080 Xtreme	755	6	
+8	Portátil Yoga 520	559	2	
+9	Portátil Ideapd 320	444	2	
 ```
+
 
 6.  Lista todos los productos del fabricante Asus que tienen un precio superior al precio medio de todos sus productos.
 ```sql
+SELECT p1.*
+FROM producto p1
+WHERE p1.codigo_fabricante = 
+							(
+                                SELECT f.codigo
+                                FROM fabricante f 
+                                WHERE f.nombre = 'Asus'
+                            )
+                            AND p1.precio >= (
+                                				SELECT AVG(p2.precio)
+                                                 FROM producto p2
+                            				);
 
 -- RESULTADO
-
-
+-- No hay resultado
 ```
+
 
 
 #### [A4.1.7.2] Subconsultas (En la cláusula HAVING)
 7. Devuelve un listado con todos los nombres de los fabricantes que tienen el mismo número de productos que el fabricante Lenovo.
 ```sql
+SELECT f.nombre
+FROM fabricante f INNER JOIN producto p 
+	ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING COUNT(p.codigo_fabricante) = (SELECT fabricante.codigo
+                                    FROM fabricante
+                                    WHERE fabricante.nombre = 'Lenovo');
 
 -- RESULTADO
-
-
+nombre	
+Asus	
+Crucial	
+Hewlett-Packard	
+Lenovo	
 ```
 
 
@@ -848,34 +951,58 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.3] Subconsultas con ALL y ANY
 8. Devuelve el producto más caro que existe en la tabla producto sin hacer uso de MAX, ORDER BY ni LIMIT.
 ```sql
+SELECT p.nombre
+FROM producto p
+WHERE p.precio >= ALL (SELECT p2.precio
+                   		FROM producto p2);
 
 -- RESULTADO
-
-
+GeForce GTX 1080 Xtreme	
 ```
+
 
 9. Devuelve el producto más barato que existe en la tabla producto sin hacer uso de MIN, ORDER BY ni LIMIT.
 ```sql
+SELECT p1.nombre
+FROM producto p1
+WHERE p1.precio <= ALL(SELECT p2.precio
+                      	FROM producto p2);
 
 -- RESULTADO
-
-
+Impresora HP Deskjet 3720	
 ```
+
 
 10. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando ALL o ANY).
 ```sql
+SELECT f1.nombre
+FROM fabricante f1
+WHERE f1.codigo = ANY ( SELECT p1.codigo_fabricante
+                        FROM producto p1);
 
 -- RESULTADO
-
-
+nombre	
+Asus	
+Lenovo	
+Hewlett-Packard	
+Samsung	
+Seagate	
+Crucial	
+Gigabyte	
 ```
+
 
 11. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando ALL o ANY).
 ```sql
+SELECT f1.nombre
+FROM fabricante f1
+WHERE f1.codigo != ALL ( SELECT p1.codigo_fabricante
+                        FROM producto p1);
 
 -- RESULTADO
-
-
+nombre	
+Huawei	
+Xiaomi	
 ```
 
 
@@ -883,18 +1010,34 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.4] Subconsultas con IN y NOT IN
 12. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando IN o NOT IN).
 ```sql
+SELECT f1.nombre
+FROM fabricante f1
+WHERE f1.codigo IN ( SELECT p1.codigo_fabricante
+                        FROM producto p1);
 
 -- RESULTADO
-
-
+nombre	
+Asus	
+Lenovo	
+Hewlett-Packard	
+Samsung	
+Seagate	
+Crucial	
+Gigabyte	
 ```
+
 
 13. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando IN o NOT IN).
 ```sql
+SELECT f1.nombre
+FROM fabricante f1
+WHERE f1.codigo NOT IN ( SELECT p1.codigo_fabricante
+                        FROM producto p1);
 
 -- RESULTADO
-
-
+nombre	
+Huawei	
+Xiaomi	
 ```
 
 
@@ -902,18 +1045,37 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.5] Subconsultas con EXISTS y NOT EXISTS
 14. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql
+SELECT DISTINCT(f1.nombre)
+FROM fabricante f1 INNER JOIN producto p1	
+	ON f1.codigo = p1.codigo_fabricante
+WHERE EXISTS (SELECT p1.codigo_fabricante
+              FROM producto p1);
 
 -- RESULTADO
-
-
+nombre	
+Asus	
+Lenovo	
+Hewlett-Packard	
+Samsung	
+Seagate	
+Crucial	
+Gigabyte	
 ```
+
 
 15. Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql
+SELECT DISTINCT f.nombre
+FROM fabricante f LEFT JOIN producto p ON p.codigo_fabricante = f.codigo
+WHERE NOT EXISTS (SELECT DISTINCT p.codigo_fabricante
+                  FROM producto p INNER JOIN fabricante 
+                    ON f.codigo = p.codigo_fabricante
+                );
 
 -- RESULTADO
-
-
+nombre	
+Huawei	
+Xiaomi	
 ```
 
 
@@ -921,24 +1083,52 @@ Ejemplo del resultado esperado:
 #### [A4.1.7.6] Subconsultas correlacionadas
 16. Lista el nombre de cada fabricante con el nombre y el precio de su producto más caro.
 ```sql
+SELECT f.nombre AS nombre_fabricante, p.nombre AS nombre_producto, MAX(p.precio) AS precio_maximo
+FROM producto p INNER JOIN fabricante f 
+    ON p.codigo_fabricante = f.codigo 
+GROUP BY f.nombre;
 
 -- RESULTADO
-
-
+nombre_fabricante	nombre_producto	precio_maximo	
+Asus	Monitor 24 LED Full HD	245.99	
+Crucial	Memoria RAM DDR4 8GB	755	
+Gigabyte	GeForce GTX 1050Ti	185	
+Hewlett-Packard	Impresora HP Deskjet 3720	180	
+Lenovo	Portátil Yoga 520	559	
+Samsung	Disco SSD 1 TB	150.99	
+Seagate	Disco duro SATA3 1TB	86.99	
 ```
+
 
 17. Devuelve un listado de todos los productos que tienen un precio mayor o igual a la media de todos los productos de su mismo fabricante.
 ```sql
+SELECT Nombre AS 'Nombre Fabricante', Promedio AS 'Promedio Fabricante', Precio AS 'Precio Producto' 
+FROM producto h
+INNER JOIN (SELECT p.codigo_fabricante, AVG(p.precio) AS 'Promedio'
+            FROM producto p
+            GROUP BY p.codigo_fabricante) w ON h.codigo_fabricante = w.codigo_fabricante
+WHERE precio > Promedio
 
 -- RESULTADO
-
-
+Nombre Fabricante	Promedio Fabricante	Precio Producto	
+GeForce GTX 1080 Xtreme	437.5	755	
+Monitor 27 LED Full HD	223.995	245.99	
+Portátil Yoga 520	501.5	559	
+Impresora HP Laserjet Pro M26nw	119.995	180	
 ```
+
 
 18. Lista el nombre del producto más caro del fabricante Lenovo.
 ```sql
+SELECT p.nombre 
+FROM fabricante f INNER JOIN producto p ON p.codigo_fabricante = f.codigo
+WHERE f.nombre = (SELECT f.nombre 
+                  FROM fabricante f
+                  WHERE f.nombre = 'Lenovo') 
+  AND p.precio = (SELECT MAX(p.precio) 
+                  FROM fabricante f INNER JOIN producto p ON p.codigo_fabricante = f.codigo
+                  WHERE f.nombre = 'Lenovo')
 
 -- RESULTADO
-
-
+Portátil Yoga 520	
 ```
