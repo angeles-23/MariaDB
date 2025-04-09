@@ -103,6 +103,20 @@ FROM producto p INNER JOIN fabricante f
 ORDER BY p.precio ASC
 LIMIT 1;
 
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE p.precio = (SELECT MIN(p1.precio)
+                 FROM producto p1)
+LIMIT 1;
+
+-- SQL Server: En caso de que existan varios productos con el mismo precio (WITH TIES)
+SELECT TOP 1 WITH TIES 
+    p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+ORDER BY p.precio ASC;
+
 -- RESULTADO
 Impresora HP Deskjet 3720	59.99	Hewlett-Packard	
 ```
@@ -122,6 +136,13 @@ SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
 FROM producto p INNER JOIN fabricante f 
 	ON p.codigo_fabricante = f.codigo 
 ORDER BY p.precio DESC
+LIMIT 1;
+
+SELECT p.nombre as nombre_producto, p.precio, f.nombre as nombre_fabricante
+FROM producto p INNER JOIN fabricante f 
+	ON p.codigo_fabricante = f.codigo 
+WHERE p.precio = (SELECT MAX(p1.precio)
+                 FROM producto p1)
 LIMIT 1;
 
 -- RESULTADO
@@ -310,39 +331,31 @@ Resuelva todas las consultas utilizando las cláusulas LEFT JOIN y RIGHT JOIN.
 
 1. Devuelve un listado de todos los fabricantes que existen en la base de datos, junto con los productos que tiene cada uno de ellos. El listado deberá mostrar también aquellos fabricantes que no tienen productos asociados.
 ```sql
-SELECT DISTINCT(f.codigo), f.nombre
+SELECT f.codigo, f.nombre AS nombre_fabricante, p.codigo, p.nombre AS nombre_producto, p.precio, p.codigo_fabricante
 FROM fabricante f LEFT JOIN producto p 	
 	ON f.codigo = p.codigo_fabricante;
 
 -- RESULTADO
-codigo	nombre	
-1	Asus	
-2	Lenovo	
-3	Hewlett-Packard	
-4	Samsung	
-5	Seagate	
-6	Crucial	
-7	Gigabyte	
-8	Huawei	
-9	Xiaomi	
+codigo	nombre_fabricante	codigo	nombre_producto	precio	codigo_fabricante	
+1	Asus	6	Monitor 24 LED Full HD	202	1	
+1	Asus	7	Monitor 27 LED Full HD	245.99	1	
+2	Lenovo	8	Portátil Yoga 520	559	2	
+2	Lenovo	9	Portátil Ideapd 320	444	2	
+3	Hewlett-Packard	10	Impresora HP Deskjet 3720	59.99	3	
+3	Hewlett-Packard	11	Impresora HP Laserjet Pro M26nw	180	3	
+4	Samsung	3	Disco SSD 1 TB	150.99	4	
+5	Seagate	1	Disco duro SATA3 1TB	86.99	5	
+6	Crucial	2	Memoria RAM DDR4 8GB	120	6	
+6	Crucial	5	GeForce GTX 1080 Xtreme	755	6	
+7	Gigabyte	4	GeForce GTX 1050Ti	185	7	
+8	Huawei	NULL	NULL	NULL	NULL	
+9	Xiaomi	NULL	NULL	NULL	NULL	
 ```
 
 
 2. Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
-```sql
-SELECT f.codigo, f.nombre
-FROM fabricante f LEFT JOIN producto p 	
-	ON f.codigo = p.codigo_fabricante
-WHERE p.codigo_fabricante IS NULL;
-    
--- RESULTADO
-codigo	nombre	
-8	Huawei	
-9	Xiaomi	
-```
+¿Pueden existir productos que no estén relacionados con un fabricante? Justifique su respuesta.
 
-
-3. ¿Pueden existir productos que no estén relacionados con un fabricante? Justifique su respuesta.
 ```txt
 No, porque todo producto tiene que tener una clave foránea (codigo_fabricante) que hace referencia a la clave primaria de fabricante (codigo)
 ```
