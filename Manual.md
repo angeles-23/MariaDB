@@ -1,48 +1,137 @@
-# SUBCONSULTTAS  
-Las subconsultas son consultas SQL dentro de otra consulta. Se utilizan para obtener datos que luego se utilizan en la consulta principal. En otras palabras, una subconsulta es una consulta anidada dentro de otra, que puede ser utilizada en la cláusula SELECT, FROM, WHERE, entre otras.
+## 📘 Subconsultas en SQL - Guía Completa con Ejemplos
+Una subconsulta es una consulta SQL anidada dentro de otra consulta. Es útil cuando necesitas un valor intermedio para completar una operación. Existen varios tipos, y en esta guía los verás paso a paso con ejemplos detallados.
 
-## Tipos de subconsultas:
-Existen varios tipos de subconsultas, y se pueden clasificar de la siguiente manera:
-- **Subconsultas de fila**. Devuelven más de una columna pero una única fila.
-- **Subconsultas de tabla**. Devuelve una o varias columnas y cero o varias filas.
-- **Subconsultas escalares**. Devuelven una columna y una fila (un valor).
+### 🔹 ¿Qué es una subconsulta?
+Es una consulta dentro de otra consulta. Puede ir en:
+- `SELECT`
+- `FROM`
+- `WHERE`
+- `HAVING`
 
-### Subconsulta en la cláusula WHERE: 
-Es la más común y se usa cuando necesitas obtener un valor para compararlo con otros valores en la consulta principal.
+### 🔸 Tipos de Subconsultas
+#### ✅ 1. Subconsulta Escalar
+**Devuelve un único valor (una sola celda: 1 fila, 1 columna)**
 
-Ejemplo:
+🧪 Ejemplo:
 ```sql
-SELECT nombre, salario
-FROM empleados
-WHERE salario > (SELECT AVG(salario) FROM empleados);
+SELECT nombre
+FROM empleado
+WHERE salario > (
+    SELECT AVG(salario)
+    FROM empleado
+);
 ```
-
-En este caso, la subconsulta devuelve el salario promedio de todos los empleados, y la consulta principal selecciona a los empleados cuyo salario es mayor que ese promedio.
-
-### Subconsulta en la cláusula FROM: 
-En este caso, la subconsulta se usa para crear una tabla temporal que luego es utilizada por la consulta principal.
-
-Ejemplo:
+📌 **Explicación paso a paso:**
+**1. Subconsulta interna:**
 ```sql
-SELECT emp_id, nombre
-FROM (SELECT emp_id, nombre FROM empleados WHERE salario > 50000) AS empleados_buenos;
-
+SELECT AVG(salario) FROM empleado;
 ```
+- Devuelve el salario promedio, por ejemplo: 3000.
 
+**2. Consulta principal:**
+- Muestra los empleados con salario mayor a 3000.
 
-Aquí, la subconsulta crea una lista de empleados con salario mayor a 50,000, y luego la consulta principal la utiliza para seleccionar sus emp_id y nombre.
+#### ✅ 2. Subconsulta de Una Columna con Múltiples Filas
+**Devuelve una columna pero varias filas**
 
-### Subconsulta en la cláusula SELECT: 
-Se usa para calcular valores adicionales o realizar agregaciones dentro de la consulta principal.
-
-Ejemplo:
+🧪 Ejemplo:
 ```sql
-SELECT nombre, (SELECT COUNT(*) FROM proyectos WHERE proyectos.emp_id = empleados.emp_id) AS num_proyectos
-FROM empleados;
+SELECT nombre
+FROM empleado
+WHERE departamento_id IN (
+    SELECT id
+    FROM departamento
+    WHERE ubicacion = 'Madrid'
+);
 ```
+📌 **Explicación**:
+**1. Subconsulta:** obtiene todos los `id` de departamentos en Madrid.
+**2. Consulta externa:** muestra los empleados que trabajan en esos departamentos.
 
-En este caso, la subconsulta cuenta el número de proyectos de cada empleado y lo incluye como una columna en el resultado de la consulta principal.
+#### ✅ 3. Subconsulta de Varias Columnas (tupla)
+**Devuelve varias columnas, usada con `IN`, `EXISTS`, o comparaciones múltiples**.
+
+🧪 Ejemplo:
+```sql
+SELECT nombre
+FROM empleado
+WHERE (departamento_id, puesto) IN (
+    SELECT departamento_id, puesto
+    FROM vacantes
+);
+```
+📌 **Explicación**:
+1. La subconsulta devuelve combinaciones de departamento y puesto disponibles.
+2. Se buscan empleados que coincidan con esas combinaciones.
+
+#### ✅ 4. Subconsulta Correlacionada
+**La subconsulta depende de la fila actual de la consulta externa.
+Se ejecuta una vez por cada fila de la consulta principal.**
+
+🧪 Ejemplo:
+```sql
+SELECT nombre
+FROM empleado e
+WHERE salario > (
+    SELECT AVG(salario)
+    FROM empleado
+    WHERE departamento_id = e.departamento_id
+);
+```
+📌 **Explicación**:
+- Por cada empleado, calcula el salario promedio de su propio departamento.
+- Muestra solo los que ganan más que el promedio de su equipo.
+
+#### ✅ 5. Subconsulta en la Cláusula FROM (Tabla Derivada)
+**Se usa una subconsulta como si fuera una tabla temporal.**
+🧪 Ejemplo:
+```sql
+SELECT d.nombre, e.promedio_salario
+FROM (
+    SELECT departamento_id, AVG(salario) AS promedio_salario
+    FROM empleado
+    GROUP BY departamento_id
+    ) e
+JOIN departamento d ON e.departamento_id = d.id;
+```
+📌 **Explicación**:
+1. La subconsulta calcula el promedio de salario por departamento.
+2. Luego se hace un `JOIN` con `departamento` para mostrar el nombre del departamento junto al promedio.
+
+#### ✅ 6. Subconsulta con EXISTS / NOT EXISTS
+**Se utiliza para verificar si existen filas que cumplan cierta condición.**
+
+🧪 Ejemplo con `EXISTS`:
+```sql
+SELECT nombre
+FROM departamento d
+WHERE EXISTS (
+    SELECT 1
+    FROM empleado e
+    WHERE e.departamento_id = d.id
+);
+```
+🧪 Ejemplo con `NOT EXISTS`:
+```sql
+SELECT nombre
+FROM departamento d
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM empleado e
+    WHERE e.departamento_id = d.id
+);
+```
+📌 **Explicación**:
+- `EXISTS`: muestra los departamentos que tienen empleados.
+- `NOT EXISTS`: muestra los departamentos que no tienen empleados.
 
 
-Las subconsultas son muy útiles porque permiten simplificar consultas complejas al dividirlas en partes más pequeñas y manejables. Sin embargo, es importante usarlas con cuidado, ya que en algunos casos pueden afectar el rendimiento de la consulta, especialmente si la subconsulta devuelve muchos datos o se ejecuta muchas veces.
-
+### 🧾 Comparativa de Tipos de Subconsultas
+|Tipo|Devuelve|Usado en	Característica|Principal|
+|----|--------|-----------------------|---------|
+|Escalar|Un solo valor|SELECT, WHERE|Ideal para comparar con un valor único|
+|Una columna, muchas filas|	Lista de valores|	IN, = ANY|	Muy útil para búsquedas tipo lista|
+|Varias columnas (tuplas)|	Varias columnas|	IN (tuplas)|	Compara múltiples valores al mismo tiempo|
+|Correlacionada|	Depende de cada fila|	WHERE|	Se ejecuta repetidamente, una vez por cada fila|
+|En FROM|	Tabla temporal|	FROM	|Se puede usar con alias y unir a otras tablas|
+|EXISTS / NOT EXISTS|	true / false|	WHERE|	Verifica existencia de filas según una condición|
