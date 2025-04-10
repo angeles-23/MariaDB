@@ -47,7 +47,8 @@ WHERE departamento_id IN (
 ```
 📌 **Explicación**:
 
-**1. Subconsulta:** obtiene todos los `id` de departamentos en Madrid.
+**1. Subconsulta:** obtiene todos los `id` de departamentos en Madrid. 
+
 **2. Consulta externa:** muestra los empleados que trabajan en esos departamentos.
 
 #### ✅ 3. Subconsulta de Varias Columnas (tupla)
