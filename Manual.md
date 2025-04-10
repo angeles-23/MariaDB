@@ -22,6 +22,7 @@ WHERE salario > (
 );
 ```
 📌 **Explicación paso a paso:**
+
 **1. Subconsulta interna:**
 ```sql
 SELECT AVG(salario) FROM empleado;
@@ -45,6 +46,7 @@ WHERE departamento_id IN (
 );
 ```
 📌 **Explicación**:
+
 **1. Subconsulta:** obtiene todos los `id` de departamentos en Madrid.
 **2. Consulta externa:** muestra los empleados que trabajan en esos departamentos.
 
@@ -61,6 +63,7 @@ WHERE (departamento_id, puesto) IN (
 );
 ```
 📌 **Explicación**:
+
 1. La subconsulta devuelve combinaciones de departamento y puesto disponibles.
 2. Se buscan empleados que coincidan con esas combinaciones.
 
@@ -79,6 +82,7 @@ WHERE salario > (
 );
 ```
 📌 **Explicación**:
+
 - Por cada empleado, calcula el salario promedio de su propio departamento.
 - Muestra solo los que ganan más que el promedio de su equipo.
 
@@ -95,6 +99,7 @@ FROM (
 JOIN departamento d ON e.departamento_id = d.id;
 ```
 📌 **Explicación**:
+
 1. La subconsulta calcula el promedio de salario por departamento.
 2. Luego se hace un `JOIN` con `departamento` para mostrar el nombre del departamento junto al promedio.
 
@@ -122,6 +127,7 @@ WHERE NOT EXISTS (
 );
 ```
 📌 **Explicación**:
+
 - `EXISTS`: muestra los departamentos que tienen empleados.
 - `NOT EXISTS`: muestra los departamentos que no tienen empleados.
 
