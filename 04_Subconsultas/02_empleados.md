@@ -652,7 +652,33 @@ Resuelva todas las consultas utilizando la sintaxis de SQL1 y SQL2.
 
 1. Devuelve un listado con los empleados y los datos de los departamentos donde trabaja cada uno.
 ```sql
-SELECT e.codigo AS codigo_empleado, e.nif, e.nombre AS nombre_empleado, e.apellido1, e.apellido2, e.codigo_departamento, d.codigo AS codigo_del_departamento, d.nombre AS nombre_departamento, d.presupuesto, d.gastos
+-- SQL1
+SELECT 
+    e.codigo AS codigo_empleado, 
+    e.nif, 
+    e.nombre AS nombre_empleado, 
+    e.apellido1, 
+    e.apellido2, 
+    e.codigo_departamento, 
+    d.codigo AS codigo_del_departamento, 
+    d.nombre AS nombre_departamento, 
+    d.presupuesto, 
+    d.gastos
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo;
+
+-- SQL2
+SELECT 
+    e.codigo AS codigo_empleado, 
+    e.nif, 
+    e.nombre AS nombre_empleado, 
+    e.apellido1, 
+    e.apellido2, 
+    e.codigo_departamento, 
+    d.codigo AS codigo_del_departamento, 
+    d.nombre AS nombre_departamento, 
+    d.presupuesto, 
+    d.gastos
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo;
 
@@ -674,7 +700,34 @@ codigo_empleado	nif	nombre_empleado	apellido1	apellido2	codigo_departamento	codi
 
 2. Devuelve un listado con los empleados y los datos de los departamentos donde trabaja cada uno. Ordena el resultado, en primer lugar por el nombre del departamento (en orden alfabético) y en segundo lugar por los apellidos y el nombre de los empleados.
 ```sql
-SELECT e.codigo AS codigo_empleado, e.nif, e.nombre AS nombre_empleado, e.apellido1, e.apellido2, e.codigo_departamento, d.codigo AS codigo_del_departamento, d.nombre AS nombre_departamento, d.presupuesto, d.gastos
+-- SQL1
+SELECT 
+    e.codigo AS codigo_empleado, 
+    e.nif, 
+    e.nombre AS nombre_empleado, 
+    e.apellido1, 
+    e.apellido2, 
+    e.codigo_departamento, 
+    d.codigo AS codigo_del_departamento, 
+    d.nombre AS nombre_departamento, 
+    d.presupuesto, 
+    d.gastos
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo
+ORDER BY d.nombre ASC, e.apellido1 ASC, e.apellido2 ASC, e.nombre ASC;
+
+-- SQL2
+SELECT 
+    e.codigo AS codigo_empleado, 
+    e.nif, 
+    e.nombre AS nombre_empleado, 
+    e.apellido1, 
+    e.apellido2, 
+    e.codigo_departamento, 
+    d.codigo AS codigo_del_departamento, 
+    d.nombre AS nombre_departamento, 
+    d.presupuesto, 
+    d.gastos
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
 ORDER BY d.nombre ASC, e.apellido1 ASC, e.apellido2 ASC, e.nombre ASC;
@@ -697,6 +750,12 @@ codigo_empleado	nif	nombre_empleado	apellido1	apellido2	codigo_departamento	codi
 
 3. Devuelve un listado con el código y el nombre del departamento, solamente de aquellos departamentos que tienen empleados.
 ```sql
+-- SQL1
+SELECT DISTINCT (d.codigo) AS codigo_departamento, d.nombre AS nombre_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo;
+
+-- SQL2
 SELECT DISTINCT (d.codigo) AS codigo_departamento, d.nombre AS nombre_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo;
@@ -713,7 +772,19 @@ codigo_departamento	nombre_departamento
 
 4. Devuelve un listado con el código, el nombre del departamento y el valor del presupuesto actual del que dispone, solamente de aquellos departamentos que tienen empleados. El valor del presupuesto actual lo puede calcular restando al valor del presupuesto inicial (columna presupuesto) el valor de los gastos que ha generado (columna gastos).
 ```sql
-SELECT DISTINCT(d.codigo) AS codigo_departamento, d.nombre AS nombre_departamento, (d.presupuesto-d.gastos) AS presupuesto_actual
+-- SQL1
+SELECT 
+    DISTINCT(d.codigo) AS codigo_departamento, 
+    d.nombre AS nombre_departamento, 
+    (d.presupuesto-d.gastos) AS presupuesto_actual
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo;
+
+-- SQL2
+SELECT 
+    DISTINCT(d.codigo) AS codigo_departamento, 
+    d.nombre AS nombre_departamento, 
+    (d.presupuesto-d.gastos) AS presupuesto_actual
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo;
 
@@ -729,6 +800,12 @@ codigo_departamento	nombre_departamento	presupuesto_actual
 
 5. Devuelve el nombre del departamento donde trabaja el empleado que tiene el nif 38382980M.
 ```sql
+-- SQL1
+SELECT d.nombre AS nombre_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND e.nif = '38382980M';
+
+-- SQL2
 SELECT d.nombre AS nombre_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
@@ -741,6 +818,12 @@ Desarrollo
 
 6. Devuelve el nombre del departamento donde trabaja el empleado Pepe Ruiz Santana.
 ```sql
+-- SQL1
+SELECT d.nombre AS nombre_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND (e.nombre = 'Pepe' AND e.apellido1 = 'Ruiz' AND e.apellido2 = 'Santana');
+
+-- SQL2
 SELECT d.nombre AS nombre_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
@@ -753,6 +836,13 @@ Recursos Humanos
 
 7. Devuelve un listado con los datos de los empleados que trabajan en el departamento de I+D. Ordena el resultado alfabéticamente.
 ```sql
+-- SQL1
+SELECT e.codigo, e.nif, e.nombre, e.apellido1, e.apellido2, e.codigo_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND d.nombre = 'I+D'
+ORDER BY e.nombre ASC;
+
+-- SQL2
 SELECT e.codigo, e.nif, e.nombre, e.apellido1, e.apellido2, e.codigo_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
@@ -768,6 +858,14 @@ codigo	nif	nombre   	apellido1	apellido2	codigo_departamento
 
 8. Devuelve un listado con los datos de los empleados que trabajan en el departamento de Sistemas, Contabilidad o I+D. Ordena el resultado alfabéticamente.
 ```sql
+-- SQL1
+SELECT e.codigo, e.nif, e.nombre, e.apellido1, e.apellido2, e.codigo_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND d.nombre IN ('Sistemas', 'Contabilidad', 'I+D')
+ORDER BY e.apellido1, e.apellido2, e.nombre ASC;
+
+
+-- SQL2
 SELECT e.codigo, e.nif, e.nombre, e.apellido1, e.apellido2, e.codigo_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
@@ -787,6 +885,12 @@ codigo	nif	nombre	apellido1   	apellido2	codigo_departamento
 
 9. Devuelve una lista con el nombre de los empleados que tienen los departamentos que no tienen un presupuesto entre 100000 y 200000 euros.
 ```sql
+-- SQL1
+SELECT e.nombre AS nombre_empleado
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND d.presupuesto NOT BETWEEN 100000 AND 200000;
+
+-- SQL2
 SELECT e.nombre AS nombre_empleado
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
@@ -803,6 +907,12 @@ Diego
 
 10. Devuelve un listado con el nombre de los departamentos donde existe algún empleado cuyo segundo apellido sea NULL. Tenga en cuenta que no debe mostrar nombres de departamentos que estén repetidos.
 ```sql
+-- SQL1
+SELECT DISTINCT(d.nombre) AS nombre_departamento
+FROM empleado e, departamento d 
+	WHERE e.codigo_departamento = d.codigo AND e.apellido2 IS NULL;
+
+-- SQL2
 SELECT DISTINCT(d.nombre) AS nombre_departamento
 FROM empleado e INNER JOIN departamento d 
 	ON e.codigo_departamento = d.codigo
