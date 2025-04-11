@@ -1233,20 +1233,48 @@ codigo	nif	nombre	apellido1	apellido2	codigo_departamento
 
 2. Devuelve el nombre del departamento con mayor presupuesto y la cantidad que tiene asignada.
 ```sql 
+SELECT d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto = (
+                        SELECT MAX(d1. presupuesto)
+                        FROM departamento d1
+                  		)
+LIMIT 1;
+
+-- SQL Server
+SELECT TOP 1 d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto = (
+                        SELECT MAX(d1. presupuesto)
+                        FROM departamento d1
+                  		);
 
 -- RESULTADO
-
-
+I+D	375000	
 ```
 
 
 
 3. Devuelve el nombre del departamento con menor presupuesto y la cantidad que tiene asignada.
 ```sql 
+SELECT d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto = (
+                        SELECT MIN(d1. presupuesto)
+                        FROM departamento d1
+                  		)
+LIMIT 1;
+
+-- SQL Server
+SELECT TOP 1 d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto = (
+                        SELECT MIN(d1. presupuesto)
+                        FROM departamento d1
+                  		);
 
 -- RESULTADO
-
-
+Proyectos	0	
 ```
 
 
@@ -1256,40 +1284,66 @@ codigo	nif	nombre	apellido1	apellido2	codigo_departamento
 #### [A4.2.7.2] Subconsultas con ALL y ANY
 4. Devuelve el nombre del departamento con mayor presupuesto y la cantidad que tiene asignada. Sin hacer uso de MAX, ORDER BY ni LIMIT.
 ```sql
+SELECT d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto >= ALL (SELECT d1.presupuesto
+                           FROM departamento d1);
 
 -- RESULTADO
-
-
+I+D	375000	
 ```
 
 
 
 5. Devuelve el nombre del departamento con menor presupuesto y la cantidad que tiene asignada. Sin hacer uso de MIN, ORDER BY ni LIMIT.
 ```sql
+SELECT d.nombre, d.presupuesto
+FROM departamento d
+WHERE d.presupuesto < ALL (SELECT d1.presupuesto
+                           FROM departamento d1);
 
 -- RESULTADO
-
-
+nombre	presupuesto	
+Proyectos	0	
+Publicidad	0	
 ```
 
 
 
 6. Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando ALL o ANY).
 ```sql
+SELECT d.nombre
+FROM departamento d
+WHERE d.codigo = ANY (
+                    SELECT e.codigo_departamento
+                    FROM empleado e
+				);
 
 -- RESULTADO
-
-
+nombre	
+Desarrollo	
+Sistemas	
+Recursos Humanos	
+Contabilidad	
+I+D	
 ```
 
 
 
 7. Devuelve los nombres de los departamentos que no tienen empleados asociados. (Utilizando ALL o ANY).
 ```sql
+SELECT d.nombre
+FROM departamento d
+WHERE d.codigo != ALL (
+                    SELECT e.codigo_departamento
+                    FROM empleado e
+    				WHERE e.codigo_departamento IS NOT NULL
+    				);
 
 -- RESULTADO
-
-
+nombre	
+Proyectos	
+Publicidad	
 ```
 
 
@@ -1299,20 +1353,38 @@ codigo	nif	nombre	apellido1	apellido2	codigo_departamento
 #### [A4.2.7.3] Subconsultas con IN y NOT IN
 8. Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando IN o NOT IN).
 ```sql
+SELECT d.nombre
+FROM departamento d
+WHERE d.codigo IN (
+                    SELECT e.codigo_departamento
+                    FROM empleado e
+    				);
 
 -- RESULTADO
-
-
+nombre	
+Desarrollo	
+Sistemas	
+Recursos Humanos	
+Contabilidad	
+I+D	
 ```
 
 
 
 9. Devuelve los nombres de los departamentos que no tienen empleados asociados. (Utilizando IN o NOT IN).
 ```sql
+SELECT d.nombre
+FROM departamento d
+WHERE d.codigo NOT IN (
+                    SELECT e.codigo_departamento
+                    FROM empleado e
+    				WHERE e.codigo_departamento IS NOT NULL
+    				);
 
 -- RESULTADO
-
-
+nombre	
+Proyectos	
+Publicidad	
 ```
 
 
@@ -1322,18 +1394,37 @@ codigo	nif	nombre	apellido1	apellido2	codigo_departamento
 #### [A4.2.7.4] Subconsultas con EXISTS y NOT EXISTS
 10. Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql 
+SELECT d.nombre
+FROM departamento d
+WHERE EXISTS (
+                SELECT e.codigo_departamento
+                FROM empleado e
+                WHERE e.codigo_departamento = d.codigo
+            );
 
 -- RESULTADO
-
-
+nombre	
+Desarrollo	
+Sistemas	
+Recursos Humanos	
+Contabilidad	
+I+D	
 ```
 
 
 
 11. Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando EXISTS o NOT EXISTS).
 ```sql 
+SELECT d.nombre
+FROM departamento d
+WHERE NOT EXISTS (
+                SELECT e.codigo_departamento
+                FROM empleado e
+                WHERE e.codigo_departamento = d.codigo
+            );
 
 -- RESULTADO
-
-
+nombre	
+Proyectos	
+Publicidad	
 ```
