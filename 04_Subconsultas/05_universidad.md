@@ -345,19 +345,25 @@ id	nombre	creditos	tipo	curso	cuatrimestre	id_profesor	id_grado
 
 6. Devuelve un listado con todos los departamentos que no han impartido asignaturas en ningún curso escolar.
 ```sql 
-SELECT de.* 
+SELECT DISTINCT de.nombre
 FROM departamento de LEFT JOIN profesor pr 
-	ON de.id = pr.id_departamento LEFT JOIN asignatura asi 
-    ON pr.id_profesor = asi.id_profesor LEFT JOIN alumno_se_matricula_asignatura al 
-    ON asi.id = al.id_asignatura LEFT JOIN curso_escolar cu 
-    ON al.id_curso_escolar = cu.id
-WHERE pr.id_departamento IS NULL AND asi.id IS NULL AND cu.id IS NULL;   
+    ON de.id = pr.id_departamento LEFT JOIN asignatura a 
+    ON pr.id_profesor = a.id_profesor LEFT JOIN alumno_se_matricula_asignatura al 
+    ON a.id = al.id_curso_escolar LEFT JOIN curso_escolar c 
+    ON al.id_curso_escolar = c.id
+WHERE a.id_profesor IS NULL AND c.id IS NULL AND al.id_asignatura IS NULL;
+
 
 -- RESULTADO
-id	nombre	
-7	Filología	
-8	Derecho	
-9	Biología y Geología	
+nombre
+Matemáticas
+Economía y Empresa
+Educación
+Agronomía
+Química y Física
+Filología
+Derecho
+Biología y Geología
 ```
 
 
@@ -587,11 +593,6 @@ WHERE pr.id_departamento IN (SELECT d.id
                                                                            WHERE pr.id_profesor = asi.id_profesor);
 
 -- RESULTADO
-127.0.0.1/universidad/profesor/		http://localhost/phpmyadmin/index.php?route=/table/sql&db=universidad&table=departamento
-
-   Mostrando filas 0 -  9 (total de 10, La consulta tardó 0,0005 segundos.)
-
-
 SELECT pr.*
 FROM profesor pr 
 WHERE pr.id_departamento IN (SELECT d.id
@@ -656,19 +657,6 @@ id	nombre	creditos	tipo	curso	cuatrimestre	id_profesor	id_grado
 
 6. Devuelve un listado con todos los departamentos que no han impartido asignaturas en ningún curso escolar.
 ```sql 
-SELECT * 
-FROM departamento 
-WHERE id NOT IN 
-    (SELECT id_departamento 
-    FROM profesor p 
-    WHERE EXISTS (SELECT id_profesor 
-                  FROM asignatura a
-                  WHERE p.id_profesor = a.id_profesor 
-                        AND NOT EXISTS (SELECT id_asignatura 
-                                        FROM alumno_se_matricula_asignatura asm
-                                        WHERE a.id = asm.id_asignatura) 
-                 ) 
-    )
 
 /*
 SELECT *
