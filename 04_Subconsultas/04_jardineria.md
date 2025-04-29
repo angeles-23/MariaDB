@@ -1421,8 +1421,15 @@ codigo_pedido	nombre	cantidad_pedidos
 
 
 
-1.  La facturación que ha tenido la empresa en toda la historia, indicando la base imponible, el IVA y el total facturado. La base imponible se calcula sumando el coste del producto por el número de unidades vendidas de la tabla detalle_pedido. El IVA es el 21 % de la base imponible, y el total la suma de los dos campos 
+15.  La facturación que ha tenido la empresa en toda la historia, indicando la base imponible, el IVA y el total facturado. La base imponible se calcula sumando el coste del producto por el número de unidades vendidas de la tabla detalle_pedido. El IVA es el 21 % de la base imponible, y el total la suma de los dos campos 
 ```sql
+SELECT 
+    SUM(dp.precio_unidad * cantidad) AS base,
+    SUM(dp.precio_unidad * cantidad * 0.21) AS iva,
+    SUM(dp.precio_unidad * cantidad * 1.21) AS total,
+    SUM((dp.precio_unidad * cantidad) + (dp.precio_unidad * 0.21)) total2
+FROM detalle_pedido dp
+
 SELECT 
 	SUM(dp.precio_unidad * dp.cantidad) AS base_imponible,
     (SUM((dp.precio_unidad * dp.cantidad)) * 0.21) AS IVA,
@@ -1771,32 +1778,16 @@ Kevin	Fallmer	Director Oficina
 
 12. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
 ```sql 
-SELECT cl.nombre_cliente
-FROM cliente cl
+SELECT cl.nombre_cliente, cl.nombre_cliente
+FROM cliente cl INNER JOIN pedido p 
+    ON cl.codigo_cliente = p.codigo_cliente
 WHERE cl.codigo_cliente NOT IN (SELECT pa.codigo_cliente
-                           FROM pago pa
-                           );
+                                FROM pago pa
+                                );
 
 -- RESULTADO
-nombre_cliente	
-Lasas S.A.	
-Club Golf Puerta del hierro	
-DaraDistribuciones	
-Madrileña de riegos	
-Lasas S.A.	
-Flowers, S.A	
-Naturajardin	
-Americh Golf Management SL	
-Aloha	
-El Prat	
-Vivero Humanes	
-Fuenla City	
-Top Campo	
-Campohermoso	
-france telecom	
-Musée du Louvre	
-Flores S.L.	
-The Magic Garden	
+codigo_cliente  nombre_cliente
+36  Flores S.L.	
 ```
 
 
