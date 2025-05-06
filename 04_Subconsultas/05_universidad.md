@@ -1,10 +1,18 @@
 ### [A4.5.4] 📝Consultas básicas universidad❓:
 1. Devuelve un listado con el primer apellido, segundo apellido y el nombre de todos los alumnos. El listado deberá estar ordenado alfabéticamente de menor a mayor por el primer apellido, segundo apellido y nombre.
 ```sql 
-SELECT p.apellido1, p.apellido2, p.nombre
-FROM persona p
-WHERE p.tipo = 'alumno'
-ORDER BY p.apellido1 ASC, p.apellido2 ASC, p.nombre ASC;
+SELECT *
+FROM departamento
+WHERE dp.id NOT IN (
+	SELECT DISTINCT d.id
+    FROM departamento d INNER JOIN profesor pr 
+     	ON dp.id = pr.id_departamento
+    INNER JOIN asignatura asg 
+    	ON asg.id_departamento = pr.id_profesor
+    INNER JOIN alumno_se_matricula_asignatura asm
+    	ON asm_id_asignatura = asg.id
+    INNER JOIN curso_escolar ce
+    	ON ce.id = asm.id_curso_escolar);
 
 -- RESULTADO
 apellido1   	apellido2	nombre	
