@@ -1,18 +1,9 @@
 ### [A4.5.4] 📝Consultas básicas universidad❓:
 1. Devuelve un listado con el primer apellido, segundo apellido y el nombre de todos los alumnos. El listado deberá estar ordenado alfabéticamente de menor a mayor por el primer apellido, segundo apellido y nombre.
 ```sql 
-SELECT *
-FROM departamento
-WHERE dp.id NOT IN (
-	SELECT DISTINCT d.id
-    FROM departamento d INNER JOIN profesor pr 
-     	ON dp.id = pr.id_departamento
-    INNER JOIN asignatura asg 
-    	ON asg.id_departamento = pr.id_profesor
-    INNER JOIN alumno_se_matricula_asignatura asm
-    	ON asm_id_asignatura = asg.id
-    INNER JOIN curso_escolar ce
-    	ON ce.id = asm.id_curso_escolar);
+SELECT p.apellido1, p.apellido2, p.nombre
+FROM persona p
+ORDER BY p.apellido1 ASC, p.apellido2 ASC, p.nombre ASC;
 
 -- RESULTADO
 apellido1   	apellido2	nombre	
@@ -665,17 +656,18 @@ id	nombre	creditos	tipo	curso	cuatrimestre	id_profesor	id_grado
 
 6. Devuelve un listado con todos los departamentos que no han impartido asignaturas en ningún curso escolar.
 ```sql 
-
-/*
 SELECT *
-FROM departamento de LEFT JOIN profesor pr 
-	ON de.id = pr.id_departamento LEFT JOIN asignatura asi 
-    ON pr.id_profesor = asi.id_profesor 
-    WHERE NOT EXISTS (SELECT al.id_curso_escolar
-                      FROM alumno_se_matricula_asignatura al
-                      WHERE al.id_curso_escolar IS NULL) 
-AND pr.id_departamento IS NULL;
-*/
+FROM departamento
+WHERE dp.id NOT IN (
+	SELECT DISTINCT d.id
+    FROM departamento d INNER JOIN profesor pr 
+     	ON dp.id = pr.id_departamento
+    INNER JOIN asignatura asg 
+    	ON asg.id_departamento = pr.id_profesor
+    INNER JOIN alumno_se_matricula_asignatura asm
+    	ON asm_id_asignatura = asg.id
+    INNER JOIN curso_escolar ce
+    	ON ce.id = asm.id_curso_escolar);
 
 -- RESULTADO
 id	nombre	
