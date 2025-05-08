@@ -4,9 +4,9 @@ Sobre la base de datos bd_teoria_productos:
 1. Crea un procedimiento que muestre cuantos productos hay sin fabricante.
 ```sql 
 USE bd_teoria_productos;
-DROP PROCEDURE IF EXISTS productos_sin_fabricante;
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS productos_sin_fabricante;
 
 CREATE PROCEDURE productos_sin_fabricante()
 BEGIN 
@@ -40,9 +40,9 @@ WHERE Db = 'bd_teoria_productos';
 4. Crea un procedimiento que muestre el numero de productos del fabricante ‘Hijo de Ep’. Se puede indicar la cláusula COMMENT en la creación del procedimiento, descubre como hacerlo y utilizala en este ejercicio.
 ```sql 
 USE bd_teoria_productos;
-DROP PROCEDURE IF EXISTS cantidad_productos_Hijo_de_Ep;
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS cantidad_productos_Hijo_de_Ep;
 
 CREATE PROCEDURE cantidad_productos_Hijo_de_Ep()
 	COMMENT 'Muestra la cantidad de productos de Hijo de Ep'
