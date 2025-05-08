@@ -19,9 +19,6 @@ BEGIN
 CALL bd_teoria_productos.productos_sin_fabricante();
 */
 END $$
-
-DELIMITER ;
-
 ```
 
 
@@ -34,8 +31,11 @@ COMMENT 'Obtiene la cantidad de todos los productos que no tienen fabricantes';
 
 3. Muestra con una orden SQL, el contenido del procedimiento.
 ```sql 
-SHOW PROCEDURE STATUS
-WHERE Db = 'bd_teoria_productos';
+SHOW CREATE PROCEDURE productos_sin_fabricante;
+
+-- Otra forma de hacerlo: 
+SELECT body FROM mysql.proc
+WHERE name='producto_sin_fabricante' AND type='PROCEDURE';
 ```
 
 
@@ -48,14 +48,15 @@ DROP PROCEDURE IF EXISTS cantidad_productos_Hijo_de_Ep;
 
 CREATE PROCEDURE cantidad_productos_Hijo_de_Ep()
 	COMMENT 'Muestra la cantidad de productos de Hijo de Ep'
-BEGIN 
+BEGIN
 	SELECT COUNT(*) AS cantidad_productos_Hijo_de_Ep
-    FROM fabricante f INNER JOIN producto p 
-        ON f.código = p.código_fabricante
-    WHERE f.nombre = 'Hijo de Ep';
+	FROM fabricante f INNER JOIN producto p 
+        	ON f.código = p.código_fabricante
+    	WHERE f.nombre = 'Hijo de Ep';
 END $$
-
-DELIMITER ;
+/*
+CALL cantidad_productos_Hijo_de_Ep();
+*/
 ```
 
 
