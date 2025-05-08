@@ -14,12 +14,14 @@ BEGIN
     FROM producto p LEFT JOIN fabricante f 
         ON p.código_fabricante = f.código
     WHERE f.código IS NULL;
+
+/*
+CALL bd_teoria_productos.productos_sin_fabricante();
+*/
 END $$
 
 DELIMITER ;
 
-
-CALL bd_teoria_productos.productos_sin_fabricante();
 ```
 
 
