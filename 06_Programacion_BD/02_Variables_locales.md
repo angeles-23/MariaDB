@@ -68,5 +68,27 @@ END $$
 
 2. Crea un procedimiento de nombre produto_getMaxPrecio() que guarde en variables locales los datos (código, nombre y precio) del producto con mayor precio. Después debe mostrar en una única columna de nombre ‘datos_producto’ los datos del producto encontrado con este formato (código) nombre : precio . Tenemos que asegurarnos que solamente se devuelve un producto en la consulta, para que no se produzcan errores.
 ```sql 
+USE bd_teoria_productos;
+DROP PROCEDURE IF EXISTS producto_getMaxPrecio;
 
+DELIMITER $$
+CREATE PROCEDURE producto_getMaxPrecio()
+    COMMENT 'Devuelve el producto con mayor precio'
+BEGIN
+
+    DECLARE v_id int(11);
+    DECLARE v_nombre varchar(50);
+    DECLARE v_precio decimal(16,2);
+
+    SELECT p.id, p.nombre, p.precio
+    INTO v_id, v_nombre, v_precio
+    FROM producto p
+    ORDER BY p.precio DESC
+    LIMIT 1;
+
+    SELECT concat('(', v_id, ') ', v_nombre, ' : ', v_precio) AS datos_producto;
+/*
+CALL producto_getMaxPrecio();
+*/
+END $$
 ```
