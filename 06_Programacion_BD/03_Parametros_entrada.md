@@ -4,11 +4,11 @@ Sobre la base de datos bd_teoria_productos
 1. Crea un procedimiento de nombre producto_posicion() que guarde en variables locales los datos del producto que ocupa la posición indicada, una vez ordenados alfabeticamente. Después debe mostrar en una única columna de nombre ‘datos_producto’ todos los datos del producto encontrado separados por guiones (utiliza la función concat_ws) o el mensaje 'no existe' cuando no exista ningún producto que ocupe esa posición.
 ```sql 
 USE bd_teoria_productos;
-DROP PROCEDURE IF EXISTS producto_posicion;
 
 DELIMITER $$
-CREATE PROCEDURE producto_posicion(p_posicion_indicada int);
-	COMMENT 'Devuelve el producto que ocupa la posición p_posicion_indicada en una cadena separada por guiones'
+DROP PROCEDURE IF EXISTS producto_posicion $$
+CREATE PROCEDURE producto_posicion(p_posicion_indicada int)
+    COMMENT 'Devuelve el producto que ocupa la posición p_posicion_indicada en una cadena separada por guiones'
 BEGIN
     -- Declarar variables
     DECLARE v_id int(11);
@@ -18,18 +18,37 @@ BEGIN
     DECLARE v_código_fabricante int(11);
     DECLARE v_desplazamiento int;
 
+
     SET v_desplazamiento = p_posicion_indicada-1;
 
-    -- Buscar el producto que ocupa la posición
-	SELECT p.id, p.nombre, p.tipo, p.precio, p.código_fabricante
-    INTO v_id, v_nombre, v_tipo, v_precio, v_código_fabricante
-    FROM producto p
-    ORDER BY p.nombre ASC
-    LIMIT v_desplazamiento, 1; -- Salto p_posicion_indicada-1 y quiero 1 posición, pero no admite ciertos caracteres, solo valores numéricos
 
-    -- Devolver la cadena esperada
-    SELECT ifnull(concat_ws('-', ), 'no existe') AS datos_producto;
+    IF p_posicion_indicada < 0 THEN
+        SELECT 'la posición debe ser >= 0' as datos_producto;
+    ELSE
+        -- Buscar el producto que ocupa la posición
+        SELECT p.id, p.nombre, p.tipo, p.precio, p.código_fabricante
+            INTO v_id, v_nombre, v_tipo, v_precio, v_código_fabricante
+            FROM producto p
+            ORDER BY p.nombre ASC
+            LIMIT v_desplazamiento, 1; -- Salto p_posicion_indicada-1 y quiero 1 posición, pero no admite ciertos caracteres, solo valores numéricos
 
+
+        -- Devolver la cadena esperada
+        -- SELECT ifnull(concat_ws('-', v_id, v_nombre), 'no existe') AS datos_producto;
+        IF v_id is not null THEN
+            SELECT  concat_ws('-', ifnull(v_id,''), ifnull(v_nombre,''), ifnull(v_tipo,''), ifnull(v_precio,''), ifnull(v_código_fabricante,''))
+      			AS datos_producto;
+        ELSE
+            SELECT 'no existe' as datos_producto;
+        END IF;
+    END IF;
+/*
+call producto_posicion(1);
+call producto_posicion(4);
+call producto_posicion(100);
+call producto_posicion(0);
+call producto_posicion(-1);
+*/
 END $$
 ```
 
