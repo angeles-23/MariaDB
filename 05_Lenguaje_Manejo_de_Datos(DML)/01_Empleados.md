@@ -3,35 +3,35 @@ Realice las siguientes operaciones sobre la base de datos empleados.
 
 1. Inserta un nuevo departamento indicando su código, nombre y presupuesto.
 ```sql
-
+INSERT INTO departamento (codigo, nombre, presupuesto) VALUES (8, 'Ventas', 15000);
 ```
 
 
 
 2. Inserta un nuevo departamento indicando su nombre y presupuesto.
 ```sql
-
+INSERT INTO departamento (nombre, presupuesto) VALUES ('Finanzas', 15000);
 ```
 
 
 
 3. Inserta un nuevo departamento indicando su código, nombre, presupuesto y gastos.
 ```sql
-
+INSERT INTO departamento (codigo, nombre, presupuesto, gastos) VALUES (10, 'Administración', 160000, 20000);
 ```
 
 
 
 4. Inserta un nuevo empleado asociado a uno de los nuevos departamentos. La sentencia de inserción debe incluir: código, nif, nombre, apellido1, apellido2 y id_departamento.
 ```sql
-
+INSERT INTO empleado (codigo, nif, nombre, apellido1, apellido2, codigo_departamento) VALUES (14, '12345678A', 'Pedro', 'Pérez', 'Ruiz', 10);
 ```
 
 
 
 5. Inserta un nuevo empleado asociado a uno de los nuevos departamentos. La sentencia de inserción debe incluir: nif, nombre, apellido1, apellido2 y id_departamento.
 ```sql
-
+INSERT INTO empleado (nif, nombre, apellido1, apellido2, codigo_departamento) VALUES ('87654321B', 'Oscar', 'Martinez', 'Miñarro', 8);
 ```
 
 
