@@ -4,11 +4,11 @@ Sobre la base de datos bd_teoria_productos
 1. Crea un procedimiento de nombre producto_posicion() que guarde en variables locales los datos del producto que ocupa la posición indicada, una vez ordenados alfabeticamente. Después debe mostrar en una única columna de nombre ‘datos_producto’ todos los datos del producto encontrado separados por guiones (utiliza la función concat_ws) o el mensaje 'no existe' cuando no exista ningún producto que ocupe esa posición.
 ```sql 
 USE bd_teoria_productos;
+DROP PROCEDURE IF EXISTS producto_posicion;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS producto_posicion $$
-CREATE PROCEDURE producto_posicion(p_posicion_indicada int)
-    COMMENT 'Devuelve el producto que ocupa la posición p_posicion_indicada en una cadena separada por guiones'
+CREATE PROCEDURE producto_posicion(p_posicion_indicada int);
+	COMMENT 'Devuelve el producto que ocupa la posición p_posicion_indicada en una cadena separada por guiones'
 BEGIN
     -- Declarar variables
     DECLARE v_id int(11);
@@ -18,38 +18,57 @@ BEGIN
     DECLARE v_código_fabricante int(11);
     DECLARE v_desplazamiento int;
 
-
     SET v_desplazamiento = p_posicion_indicada-1;
 
+    -- Buscar el producto que ocupa la posición
+	SELECT p.id, p.nombre, p.tipo, p.precio, p.código_fabricante
+    INTO v_id, v_nombre, v_tipo, v_precio, v_código_fabricante
+    FROM producto p
+    ORDER BY p.nombre ASC
+    LIMIT v_desplazamiento, 1; -- Salto p_posicion_indicada-1 y quiero 1 posición, pero no admite ciertos caracteres, solo valores numéricos
 
-    IF p_posicion_indicada < 0 THEN
-        SELECT 'la posición debe ser >= 0' as datos_producto;
-    ELSE
-        -- Buscar el producto que ocupa la posición
-        SELECT p.id, p.nombre, p.tipo, p.precio, p.código_fabricante
-            INTO v_id, v_nombre, v_tipo, v_precio, v_código_fabricante
-            FROM producto p
-            ORDER BY p.nombre ASC
-            LIMIT v_desplazamiento, 1; -- Salto p_posicion_indicada-1 y quiero 1 posición, pero no admite ciertos caracteres, solo valores numéricos
+    -- Devolver la cadena esperada
+    SELECT ifnull(concat_ws('-', ), 'no existe') AS datos_producto;
 
-
-        -- Devolver la cadena esperada
-        -- SELECT ifnull(concat_ws('-', v_id, v_nombre), 'no existe') AS datos_producto;
-        IF v_id is not null THEN
-            SELECT  concat_ws('-', ifnull(v_id,''), ifnull(v_nombre,''), ifnull(v_tipo,''), ifnull(v_precio,''), ifnull(v_código_fabricante,''))
-      			AS datos_producto;
-        ELSE
-            SELECT 'no existe' as datos_producto;
-        END IF;
-    END IF;
-/*
-call producto_posicion(1);
-call producto_posicion(4);
-call producto_posicion(100);
-call producto_posicion(0);
-call producto_posicion(-1);
-*/
 END $$
+
+/*
+ USE bd_teoria_productos;
+ DROP PROCEDURE IF EXISTS producto_posicion_2;
+ 
+ DELIMITER $$
+ CREATE PROCEDURE producto_posicion_2(IN p_posicion int)
+ 
+ BEGIN
+ 	-- Variables locales
+    DECLARE v_id int (11); -- Por defacto es NULL
+    DECLARE v_nombre varchar(25) DEFAULT '';
+    DECLARE v_tipo varchar(25) DEFAULT '';
+    DECLARE v_precio decimal(16,2) DEFAULT 0.0;
+    DECLARE v_codigo_fabricante int(11) DEFAULT 0;
+    -- Variables como parametros
+    DECLARE v_posicion int DEFAULT 0;
+    SET v_posicion = p_posicion - 1;
+   
+    SELECT p.id, p.nombre, p.tipo, p.precio, p.código_fabricante
+    INTO v_id, v_nombre, v_tipo, v_precio, v_codigo_fabricante
+    FROM producto p
+    ORDER BY p.nombre ASC
+    LIMIT v_posicion, 1;
+    
+    SELECT if(v_id IS NULL, 
+              'no existe', 
+              concat_ws('-', v_id, v_nombre, v_tipo, v_precio, v_codigo_fabricante)
+             ) AS datos_producto;
+ 
+ /*
+CALL producto_posicion_2(1);  -- Existe
+CALL producto_posicion_2(7);  -- No existe
+CALL producto_posicion_2(6);  -- Maximo
+*/
+
+END $$
+*/
 ```
 
 
@@ -79,31 +98,101 @@ BEGIN
 CALL produto_getMaxPrecioFabricante(5);
 */
 END $$
+
+/*
+USE bd_teoria_productos;
+DROP PROCEDURE IF EXISTS produto_getMaxPrecioFabricante_2;
+
+DELIMITER $$
+CREATE PROCEDURE produto_getMaxPrecioFabricante_2(IN pfabricante int(11))
+	COMMENT 'Devuelve el producto con mayor precio de ese fabricante'
+BEGIN 
+	
+    DECLARE v_id int(11);
+    DECLARE v_nombre varchar(50) DEFAULT '';
+    DECLARE v_precio decimal(16,2) DEFAULT 0.0;
+    
+    SELECT p.id, p.nombre, p.precio
+    INTO v_id, v_nombre, v_precio
+    FROM producto p
+    WHERE p.código_fabricante = pfabricante 
+    ORDER BY p.precio DESC
+    LIMIT 1;
+
+	SELECT if(v_id IS NULL,
+        concat('No existe el fabricante ', pfabricante), 
+        concat('(', v_id, ') ', v_nombre, ' : ', v_precio)
+        ) AS datos_producto;
+/*
+CALL produto_getMaxPrecioFabricante_2(5); -- Existen varios
+CALL produto_getMaxPrecioFabricante_2(3); -- Existe 
+CALL produto_getMaxPrecioFabricante_2(1); -- No existe
+*/
+END $$
 ```
 
 
 3. Crea un procedimiento de nombre producto_add() que añada un nuevo producto dado su nombre, tipo, precio y código_fabricante. Deberás enviar los datos del producto utilizando parámetros. Después debe mostrar en una única columna de nombre ‘datos_producto’ todos los datos del producto insertado separados por guiones.
-   
+
 ```sql 
+-- SOLUCIONAR
 USE bd_teoria_productos;
 DROP PROCEDURE IF EXISTS producto_add;
 
 DELIMITER $$
-CREATE PROCEDURE producto_add(IN p_nombre varchar(50), IN p_tipo varchar(25), IN p_precio decimal(16,2), IN p_código_fabricante int(11))
-	COMMENT 'Añadir un nuevo producto dado el nombre, tipo, precio y código_fabricante'
+CREATE PROCEDURE producto_add(
+    IN p_nombre varchar(50), 
+    IN p_tipo varchar(25), 
+    IN p_precio decimal(16,2), 
+    IN p_cod_fabricante int (11)
+)
+	COMMENT 'Añade un nuevo producto dado unos datos'
 BEGIN
-    /*
-    CASE p_tipo
-        WHEN p_tipo IS NULL THEN p_tipo = 'desconocido';
-        WHEN p_tipo = '' THEN p_tipo = 'desconocido';
-        ELSE p_tipo = ...
-    END
-    */
-    INSERT INTO producto (nombre, tipo, precio, código_fabricante) VALUES (p_nombre, p_tipo, p_precio, p_código_fabricante);
+	
+    DECLARE v_nombre varchar(50);
+    DECLARE v_tipo varchar(25) DEFAULT '';
+    DECLARE v_precio decimal(16,2) DEFAULT 0.0;
+    DECLARE v_cod_fabricante int(11) DEFAULT 0;
+    
+    IF p_nombre IS NULL THEN 
+    	SELECT p.tipo
+        INTO v_tipo
+        FROM producto p
+        WHERE p.código_fabricante = p_cod_fabricante
+        ORDER BY p.id DESC
+        LIMIT 1;
+            
+        IF v_tipo IS NULL THEN 
+        	SET v_tipo = 'desconocido';
+        END IF;
+    
+        SET v_cod_fabricante = p_cod_fabricante;
 
-    SELECT concat_ws('-', p_nombre, if(p_tipo IS NULL OR p_tipo = '', 'desconocido', p_tipo), p_precio, p_código_fabricante) AS datos_producto;
+   	ELSE
+    	INSERT INTO producto(nombre, tipo, precio, código_fabricante) VALUES (p_nombre, p_tipo, p_precio, p_cod_fabricante);
+        
+        SELECT p.nombre, p.tipo, p.precio, p.código_fabricante
+        INTO v_nombre, v_tipo, v_precio, v_cod_fabricante
+        FROM producto p
+        WHERE p.nombre = p_nombre
+        LIMIT 1;
+
+        IF v_nombre IS NULL OR v_cod_fabricante = 0 THEN
+            SET v_nombre = 'desconocido';
+                SET v_tipo = 'desconocido';
+            END IF;
+        END IF;    
+        
+
+    SELECT IF(v_cod_fabricante = 0 OR v_nombre = 'desconocido', 
+              'desconocido' , 
+              concat_ws('-', v_nombre, v_tipo, v_precio, v_cod_fabricante) 
+              )AS datos_producto;
+
 /*
-CALL producto_add('Teclado', 'Periferico', 25.99, 4);
+CALL producto_add('Producto A', 'Electrónica', 150.00, 1);
+CALL producto_add(NULL, NULL, NULL, 6);
+CALL producto_add(NULL, NULL, NULL, 1);
 */
 END $$
 ```
