@@ -135,65 +135,43 @@ END $$
 3. Crea un procedimiento de nombre producto_add() que añada un nuevo producto dado su nombre, tipo, precio y código_fabricante. Deberás enviar los datos del producto utilizando parámetros. Después debe mostrar en una única columna de nombre ‘datos_producto’ todos los datos del producto insertado separados por guiones.
 
 ```sql 
--- SOLUCIONAR
 USE bd_teoria_productos;
 DROP PROCEDURE IF EXISTS producto_add;
 
 DELIMITER $$
-CREATE PROCEDURE producto_add(
-    IN p_nombre varchar(50), 
-    IN p_tipo varchar(25), 
-    IN p_precio decimal(16,2), 
-    IN p_cod_fabricante int (11)
-)
-	COMMENT 'Añade un nuevo producto dado unos datos'
-BEGIN
-	
-    DECLARE v_nombre varchar(50);
+CREATE PROCEDURE producto_add(IN p_nombre varchar(50), IN p_tipo varchar(25), IN p_precio decimal(16,2), IN p_codigo_fabricante int)
+	COMMENT 'Añade un producto dado sus datos'
+BEGIN 
+    DECLARE v_id int;
+    DECLARE v_nombre varchar(50) DEFAULT '';
     DECLARE v_tipo varchar(25) DEFAULT '';
-    DECLARE v_precio decimal(16,2) DEFAULT 0.0;
-    DECLARE v_cod_fabricante int(11) DEFAULT 0;
+    DECLARE v_codigo_fabricante int DEFAULT 0;
     
-    IF p_nombre IS NULL THEN 
-    	SELECT p.tipo
-        INTO v_tipo
+    IF p_tipo IS NULL THEN 
+    	-- Busca el tipo del último producto del mismo fabricante, guardamos en v_tipo
+        SELECT p.tipo, p.código_fabricante
+        INTO v_tipo, v_codigo_fabricante
         FROM producto p
-        WHERE p.código_fabricante = p_cod_fabricante
-        ORDER BY p.id DESC
+        WHERE p.código_fabricante = p_codigo_fabricante
+        ORDER BY p.id ASC
         LIMIT 1;
-            
-        IF v_tipo IS NULL THEN 
-        	SET v_tipo = 'desconocido';
+       	
+        IF v_tipo = '' THEN
+        	SET p_tipo = 'desconocido'; 
         END IF;
+        
+        INSERT INTO producto (nombre, tipo, precio, código_fabricante) VALUES (p_nombre, v_tipo, p_precio, v_codigo_fabricante);
+    ELSE
+		INSERT INTO producto (nombre, tipo, precio, código_fabricante) VALUES (p_nombre, p_tipo, p_precio, p_codigo_fabricante);
+	END IF;
     
-        SET v_cod_fabricante = p_cod_fabricante;
-
-   	ELSE
-    	INSERT INTO producto(nombre, tipo, precio, código_fabricante) VALUES (p_nombre, p_tipo, p_precio, p_cod_fabricante);
-        
-        SELECT p.nombre, p.tipo, p.precio, p.código_fabricante
-        INTO v_nombre, v_tipo, v_precio, v_cod_fabricante
-        FROM producto p
-        WHERE p.nombre = p_nombre
-        LIMIT 1;
-
-        IF v_nombre IS NULL OR v_cod_fabricante = 0 THEN
-            SET v_nombre = 'desconocido';
-                SET v_tipo = 'desconocido';
-            END IF;
-        END IF;    
-        
-
-    SELECT IF(v_cod_fabricante = 0 OR v_nombre = 'desconocido', 
-              'desconocido' , 
-              concat_ws('-', v_nombre, v_tipo, v_precio, v_cod_fabricante) 
-              )AS datos_producto;
-
+    SELECT concat_ws(' - ', p_nombre, p_tipo, p_precio, p_codigo_fabricante) AS datos_producto;
+    
 /*
-CALL producto_add('Producto A', 'Electrónica', 150.00, 1);
-CALL producto_add(NULL, NULL, NULL, 6);
-CALL producto_add(NULL, NULL, NULL, 1);
-*/
+CALL producto_add('Teclado', 'Informática', 23.23, 5); -- Si existe
+CALL producto_add('Ratón', 'Informática', 15.99, 10);  -- código_fabricante no existe
+CALL producto_add('Ratón', '', 15.99, 1);  -- tipo no existe
+*/    
 END $$
 ```
 
