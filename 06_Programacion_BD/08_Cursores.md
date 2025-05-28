@@ -1,15 +1,55 @@
+# 📝Ejercicios sobre cursores❓:
 1. Crea un procedimiento de nombre cuentaFabricantes que cuente el numero de fabricantes que hay en la tabla fabricante realizando dicho calculo con un cursor que recorra la tabla.
 ```sql 
+USE bd_teoria_productos;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cuentaFabricantes $$
+CREATE PROCEDURE cuentaFabricantes()
+	COMMENT 'Cuenta el numero de fabricantes en la tabla fabricante, usando un cursor'
+BEGIN
+	-- Variables para el cursor
+    DECLARE v_hecho BOOL DEFAULT FALSE;       -- Llega al final del bucle
+    DECLARE v_contador int DEFAULT 0;
+    DECLARE v_id int;
+    
+    -- Cursor para recorrer
+    DECLARE cur CURSOR FOR                  -- Consulta que quiero hacer
+        SELECT v_id FROM fabricante;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND 
+        BEGIN
+            SET v_hecho = TRUE;
+        END 
+
+    -- Abrir el cursor
+    OPEN cur;
+    
+    -- Bucle para recorrer cada fila
+    WHILE v_hecho = FALSE                   -- v_hecho NO ha acabado de recorrer las filas
+    DO
+    	FETCH cur INTO v_id;
+        
+        IF v_hecho = FALSE THEN
+        	SET v_contador = v_contador + 1; 
+    	END IF;
+
+    END WHILE;
+    
+    -- Cerrar el cursor
+    CLOSE cur;
+    
+    SELECT v_contador AS numero_de_Fabricantes;
+/*
+CALL cuentaFabricantes();
+SELECT * 
+FROM fabricante;
+*/
+END $$
 ```
 
 
-
-
-
 2. Crea un procedimiento llamado precios_iniciales para asignar los precios iniciales a los productos de la tabla producto, que recibirá un parametro pincremento_precio que será de tipo decimal(16,2). Debe asignar los precios iniciales a productos ordenados por su nombre empezando por 1€ y a continuación el precio de los productos será la (posición que ocupa - 1) * pincremento_precio. Antes de finalizar el procedimiento se mostraran todos los datos de los productos del producto del último fabricante no nulo (no de todos).
-
-📝 Nota: Para la ejecución de las pruebas de este procedimiento debes iniciar una transacción antes de la ejecución del mismo, llamar al procedimiento, imprimir los datos de la tabla producto para observar el resultado de la ejecución, y finalizar la transacción con ROLLBACK para deshacer los cambios y que la base de datos no se vea afectada.
 ```sql 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS precios_iniciales$$
@@ -78,3 +118,6 @@ ROLLBACK;
 
 END $$
 ```
+
+
+📝 Nota: Para la ejecución de las pruebas de este procedimiento debes iniciar una transacción antes de la ejecución del mismo, llamar al procedimiento, imprimir los datos de la tabla producto para observar el resultado de la ejecución, y finalizar la transacción con ROLLBACK para deshacer los cambios y que la base de datos no se vea afectada.
