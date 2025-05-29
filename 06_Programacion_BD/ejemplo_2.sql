@@ -177,6 +177,7 @@ Crea una función de nombre fabricante_sumaPrecioProductos(pcodigo int) que en b
 
 Para su desarrollo debes modificar el código que se te proporciona a continuación, que devolverá el id del producto más barato del fabricante que se le pida.
 
+
 DELIMITER $$
 DROP FUNCTION IF EXISTS fabricante_getIdProductoMasBarato$$
 CREATE FUNCTION fabricante_getIdProductoMasBarato(pcodigo int) 
@@ -207,7 +208,7 @@ BEGIN
     END IF;
 
     RETURN vid;
-/*
+
 DELIMITER ;
 -- PRUEBAS
 SELECT fabricante_getIdProductoMasBarato(5);
