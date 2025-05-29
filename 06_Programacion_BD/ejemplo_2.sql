@@ -43,59 +43,66 @@ FROM fabricante f;
 Crea un procedimiento llamado fabricantes_sin_productos que reciba un parametro llamado pmaximo, que imprima los códigos y nombres de los fabricantes que no tienen productos en la tabla producto. El procedimiento nunca debe mostrar más fabricantes de los indicados en pmaximo caso de que existan. Si pmaximo es menor que uno mostrará un mensaje de error: 'ERROR pmaximo < 1'
 */
 DELIMITER $$
-DROP PROCEDURE IF EXISTS fabricantes_sin_productos $$
+DROP PROCEDURE IF EXISTS fabricantes_sin_productos$$
 CREATE PROCEDURE fabricantes_sin_productos(pmaximo int)
-
 BEGIN
-	
+
     DECLARE v_codigo int;
     DECLARE v_nombre varchar(100);
-    DECLARE v_contador int DEFAULT 0;
-    
+
     DECLARE v_fin boolean DEFAULT FALSE;
-    
-    
-    DECLARE c CURSOR FOR
-    	SELECT f.código, f.nombre
+    DECLARE v_contador_filas int DEFAULT 0;
+
+    DECLARE c CURSOR FOR 
+        SELECT f.código, f.nombre
         FROM fabricante f LEFT JOIN producto p 
             ON f.código = p.código_fabricante
         WHERE p.código_fabricante IS NULL;
     
     DECLARE CONTINUE HANDLER FOR NOT FOUND 
-    	BEGIN 
-        	SET v_fin = TRUE;
+        BEGIN 
+            SET v_fin = TRUE;
         END;
-        
-  	IF pmaximo > 1 THEN 
-    	SELECT 'ERROR pmaximo < 1' AS resultado;
+
+    
+    IF pmaximo < 1 THEN 
+        SELECT 'ERROR pmaximo < 1' AS mensaje;
+
     ELSE 
-    	OPEN c;
-    		bucle: LOOP
-            	FETCH c INTO v_codigo, v_nombre;
+        DROP TEMPORARY TABLE IF EXISTS tabla_temporal;
+        CREATE TEMPORARY TABLE tabla_temporal(
+            codigo int,
+            nombre varchar(100)
+        );
+        
+        OPEN c;
+            bucle:LOOP
+                FETCH c INTO v_codigo, v_nombre;
                 
                 IF v_fin THEN 
-                	LEAVE bucle;
+                    LEAVE bucle;
                 END IF;
-                
-                SELECT CONCAT_WS(' - ', v_codigo, v_nombre) AS resultado;
-                
-                SET v_contador = v_contador + 1;
-                
-                IF v_contador >= pmaximo THEN 
-                	LEAVE bucle;
+
+                INSERT INTO tabla_temporal(codigo, nombre) VALUES (v_codigo, v_nombre);
+
+                SET v_contador_filas = v_contador_filas + 1;
+
+                IF v_contador_filas >= pmaximo THEN 
+                    LEAVE bucle;
                 END IF;
-                
+
             END LOOP;
         CLOSE c;
+
+        SELECT CONCAT_WS('-', codigo, nombre) AS mensaje
+        FROM tabla_temporal;
+        
     END IF;
-  
-/*
-CALL fabricantes_sin_productos(0); -- Error
-CALL fabricantes_sin_productos(1); -- 1
-CALL fabricantes_sin_productos(2); -- 2
-CALL fabricantes_sin_productos(3); -- 3
-*/
 END $$
+
+CALL fabricantes_sin_productos(0);
+CALL fabricantes_sin_productos(1);
+CALL fabricantes_sin_productos(2);
 
 
 
